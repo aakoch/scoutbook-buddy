@@ -10,6 +10,9 @@ This project was created to demonstrate my ability to learn how extensions work 
 
 Download the zip file, extract, then point Chrome to the directory. Zip files are tagged: 
 
+## Project Requisites
+NodeJS v8.3+
+
 ## Installing the Project
 
 Clone locally and then run
