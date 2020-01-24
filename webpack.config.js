@@ -84,7 +84,7 @@ module.exports = (env, argv) => {
       new MergeJsonWebpackPlugin({
         "files": [
           path.join("src", "manifest.json"),
-          path.join("src", "manifest." + process.env.NODE_ENV + ".json")
+          path.join("src", "manifest." + (process.env.NODE_ENV || "development")  + ".json")
         ],
         "output": {
           "fileName": "manifest.json"
