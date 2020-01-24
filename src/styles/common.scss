@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab&display=swap');
+
+.centered {
+  display: flex;
+  justify-content: center;
+}
+
+body {
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  font-weight: normal;
+  color: $text-color;
+  background-color: $background-color;
+}
+
+header, section, footer {
+  padding: 10px;
+  background-color: $white;
+}
+
+header {
+  background-color: $brand-primary;
+  color: $white;
+}
+
+footer {
+  background-color: $brand-primary;
+  color: $white;
+  text-align: center;
+  font-size: 0.8em;
+  a {
+    outline: none;
+    color: $white;
+    &:hover, &:focus {
+      text-decoration: underline;
+      color: $white;
+    }
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $headings-font-family;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+Main Sections
+Use the primary font at large sizes (36–48px) for
+main sections of the page (H1, H2). Use all caps for
+further emphasis, if necessary. Keep the text as short
+as possible — just a few words should be enough.
+
+Secondary Items
+Use the primary or secondary font at medium sizes
+(24–32px) for items within a section (H3). Titles can be a
+word or two longer, and should be descriptive. Avoid
+all-caps treatments. When relevant, use imperatives such
+as “Sign Up for Xxxx” or “Camp at Xxxx This Summer.”
+
+Body Text
+Use the tertiary font at small sizes (9–12px) for body
+copy (p). Remember to use plain, everyday language,
+short paragraphs, and lots of bulleted lists to make the
+text scannable and easy to read.
+*/
+
+h1 { font-size: 42px; }
+h2 { font-size: 30px; }
+h3 { font-size: 24px; }
+h4 { font-size: 18px; }
+h5 { font-size: 12px; }
+h6 { font-size: 9px; }
+
+a {
+  text-decoration: none;
+  color: $brand-primary;
+  &:hover, &:focus {
+    color: darken($brand-primary, 6.25%);
+  }
+}
+
+button {
+  background: none;
+  border: none;
+  display: inline-block;
+  cursor: pointer;
+  padding: 0.5em 1.5em;
+  background: $brand-primary;
+  color: $white;
+  border-radius: $font-size-base / 2;
+  outline: none;
+  font-size: 1em;
+  &:hover, &:focus {
+    box-shadow: inset 0 0 5px 5px lighten($brand-primary, 5%);
+  }
+  &:active {
+    box-shadow: inset 3px 3px 5px 5px darken($brand-primary, 5%);
+    position: relative;
+    top: 1px;
+    left: 1px;
+  }
+}

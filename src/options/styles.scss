@@ -1,0 +1,21 @@
+@import "../styles/reset";
+@import "../styles/variables";
+@import "../styles/common";
+
+#flash {
+  margin: 10px;
+  width: 99%;
+  text-align: center;
+  position: fixed;
+  top: 0px;
+  background-color: greenyellow;
+}
+
+@media screen and (max-width: 401px) {
+  h1 {
+    font-size: 1.2em;
+  }
+  #flash {
+    width: 95%;
+  }
+}
