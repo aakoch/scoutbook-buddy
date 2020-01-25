@@ -1,38 +1,41 @@
+// If testing, add this
+// import emailValidator from "email-validator";
+
 // Copyright © 10/4/2017 Gary Feutz - All Rights Reserved
 //  You may use, distribute and modify this code for charitable use only.
 //  This code was developed to assist the Boy Scouts of America.
 function cleanString(input) {
 
-    var output = "";
-    for (var i=0; i<input.length; i++) {
+	var output = "";
+	for (var i = 0; i < input.length; i++) {
 		//console.log(input[i],input.charCodeAt(i));
-        if (input.charCodeAt(i) <= 127) {
-            output += input.charAt(i);
-        } else {
+		if (input.charCodeAt(i) <= 127) {
+			output += input.charAt(i);
+		} else {
 			switch (input.charCodeAt(i)) {
 				case 169:
-					output+="(C)";
+					output += "(C)";
 					break;
 				case 174:
-					output+="(R)";
+					output += "(R)";
 					break;
 				case 177:
-					output+="+/-";
+					output += "+/-";
 					break;
 				case 189:
-					output+="1/2";
+					output += "1/2";
 					break;
 				case 188:
-					output+="1/4";
+					output += "1/4";
 					break;
 				case 8532:
-					output+="2/3";
+					output += "2/3";
 					break;
 				case 190:
-					output+="3/4";
+					output += "3/4";
 					break;
 				case 247:
-					output+="/";
+					output += "/";
 					break;
 				case 8208:
 				case 8209:
@@ -40,162 +43,148 @@ function cleanString(input) {
 				case 8211:
 				case 8212:
 				case 8213:
-					output+="-";
+					output += "-";
 					break;
 				case 8216:
 				case 8217:
 				case 8218:
 				case 8219:
-					output +="'";
+					output += "'";
 					break;
 				case 8220:
 				case 8221:
 				case 8222:
 				case 8223:
-					output +='"';
+					output += '"';
 					break;
 
 				case 8226:
 				case 8227:
-					output +='*';
+					output += '*';
 					break;
 				case 8531:
-					output +='1/3';
-					break;					
-					
+					output += '1/3';
+					break;
+
 			}
 		}
-    }
-    return output;
+	}
+	return output;
 }
 
-function tokenVal(formpost,token,val) {
-	var re =  RegExp(token+"=[^&]*");
-	return formpost.replace(re,token+'='+val);	
+function tokenVal(formpost, token, val) {
+	var re = RegExp(token + "=[^&]*");
+	return formpost.replace(re, token + '=' + val);
 }
 
-
-function getFormVal(formPost,varName) {
+function getFormVal(formPost, varName) {
 	//console.log(formPost,varName);
-	var res='';
-	if(formPost.match('&' + varName +'=([^&]*)') != null) {
-		res=formPost.match('&' + varName +'=([^&]*)')[1];
+	var res = '';
+	if (formPost.match('&' + varName + '=([^&]*)') != null) {
+		res = formPost.match('&' + varName + '=([^&]*)')[1];
 	}
 	return res;
 }
 
-function getToken(formpost,token) {
-	var re =  RegExp(token+"=([^&]+)");	
-	res=formpost.match(re);
-	if(res != null) {
+function getToken(formpost, token) {
+	var re = RegExp(token + "=([^&]+)");
+	res = formpost.match(re);
+	if (res != null) {
 		return formpost.match(re)[1];
-	} 
+	}
 	return '';
 }
 
-function phonecheck(phonenum,newphone) {
-
-
-	if(phonenum.match(/^(\d\d\d-\d\d\d-\d\d\d\d)$/) == null) return false;
-	return true;
+function phonecheck(phonenum) {
+	return /^(\d\d\d-\d\d\d-\d\d\d\d)$/.test(phonenum);
 }
 
-
 function statecheck(state) {
-	var states=["AA","AE","AK","AL","AP","AR","AZ","CA","CO","CT","DC","DE","FL","GA","HI","IA","ID","IL","IN","KS","KY","LA","MA","MD","ME","MI","MN","MO","MS","MT","NC","ND","NE","NH","NJ","NM","NV","NY","OH","OK","OR","PA","PR","RI","SC","SD","TN","TX","UT","VA","VT","WA","WI","WV","WY"];
+	return ["AA", "AE", "AK", "AL", "AP", "AR", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "HI", "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "PR", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VT", "WA", "WI", "WV", "WY"].includes(state);
+}
 
-	for(var i =0;i<states.length;i++) {
-		if(state==states[i]) {
+function zipcheck(zip) {
+	return !isNaN(zip) && parseInt(zip) <= 99999;
+}
+
+function emailcheck(email) {
+	if (email.match(/^[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/) == null) return false;
+	//if(email.match(/[^@]+@[^\.]+\.[a-zA-Z][a-zA-Z][a-zA-Z]$/) == null) return false;
+	return true;
+}
+function emailcheck2(email) {
+	return emailValidator.validate(email);
+}
+
+/* function looks to see if val is a member of array arr*/
+function arrContain(arr, val) { //tested used
+	for (var x = 0; x < arr.length; x++) {
+		if (arr[x] == val) {
 			return true;
 		}
 	}
 	return false;
 }
 
-function zipcheck(zip) {
-	if(isNaN(zip) == true) {
-		return false;
-	} else {
-		//zip is a number
-		if(parseInt(zip) > 99999) {
-			return false;
-		}
-	}
-	return true;
-}
-
-function emailcheck(email) {
-	if(email.match(/^[A-Za-z0-9._%+-]+@(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/)== null) return false;
-	//if(email.match(/[^@]+@[^\.]+\.[a-zA-Z][a-zA-Z][a-zA-Z]$/) == null) return false;
-	return true;	
-}
-
-
-/* function looks to see if val is a member of array arr*/
-function arrContain(arr,val) {	//tested used
-	for (var x=0;x<arr.length;x++) {
-	  if (arr[x] == val) {
-		  return true;
-	  }
-	}
-	return false;
-}
-
 /* function looks to see if val is a member of array arr, if not, pushes it*/
-function pushUnique(arr,val) {	//tested used
-	for (var x=0;x<arr.length;x++) {
-	  if (arr[x] == val) {
-		  return true;
-	  }
+function pushUnique(arr, val) { //tested used
+	for (var x = 0; x < arr.length; x++) {
+		if (arr[x] == val) {
+			return true;
+		}
 	}
 	arr.push(val);
 	return false;
 }
 
-
 function cyear() {
-var d=new Date(Date.now());
-return d.getFullYear();
-}	
+	var d = new Date(Date.now());
+	return d.getFullYear();
+}
 
-function escapeHTML(str) { 
-var strr = str+'';
-return strr.replace(/[&"'<>]/g, (m) => escapeHTML.replacements[m]); }
-escapeHTML.replacements = { "&": "&amp;", '"': "&quot;", "'": "&#39;", "<": "&lt;", ">": "&gt;" };
+function escapeHTML(str) {
+	var strr = str + '';
+	return strr.replace(/[&"'<>]/g, (m) => escapeHTML.replacements[m]);
+}
+escapeHTML.replacements = {
+	"&": "&amp;",
+	'"': "&quot;",
+	"'": "&#39;",
+	"<": "&lt;",
+	">": "&gt;"
+};
 
 function changepageurl(url) {
 	//console.log('changing page to '+ url);
 	// if the URL contains scoutbook.com but nothing else, do not nav to it
-	var skipNav=false;
-	if(url.match(/scoutbook.com\//) != null) {
+	var skipNav = false;
+	if (url.match(/scoutbook.com\//) != null) {
 		if (url.match(/scoutbook.com\/./) == null) {
-			skipNav=true;
+			skipNav = true;
 		}
-		if(url.match(/Action=Print/) != null) {
+		if (url.match(/Action=Print/) != null) {
 			//reports do not have mobile-concat-js loaded
-			skipNav=true;
+			skipNav = true;
 		}
 	}
-	if (skipNav==false) {
-				$.mobile.changePage(
-						url,
-					{
-					    allowSamePageTransition: true,
-					    transition: 'none',
-					    showLoadMsg: true,
-					    reloadPage: true
-					}
-				);		
-	}				
-
+	if (skipNav == false) {
+		$.mobile.changePage(
+			url, {
+				allowSamePageTransition: true,
+				transition: 'none',
+				showLoadMsg: true,
+				reloadPage: true
+			}
+		);
+	}
 }
 
 //pure test function
-function sendhttpreqmsg(url) {	
+function sendhttpreqmsg(url) {
 	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
+	xhttp.onreadystatechange = function () {
 		if (this.readyState == 4 && this.status == 200) {
-					resetLogoutTimer(url);
+			resetLogoutTimer(url);
 			alert(this.getAllResponseHeaders());
 			//this.setRequestHeader( 'Content-Disposition', 'attachment;filename=troop_194_advancement2.csv' );
 			//alert(this.getAllResponseHeaders());			
@@ -203,11 +192,15 @@ function sendhttpreqmsg(url) {
 		}
 	};
 	xhttp.open("GET", url, true);
-	xhttp.responseType="document";
+	xhttp.responseType = "document";
 	xhttp.send();
 
-	xhttp.onerror =function() {
+	xhttp.onerror = function () {
 		//alert('error');
 		return;
 	};
 }
+// If testing, add this
+// export {
+// 	cleanString, phonecheck, statecheck, zipcheck, emailcheck, emailcheck2
+// };

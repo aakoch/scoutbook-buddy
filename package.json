@@ -4,7 +4,7 @@
   "description": "Scoutbook Buddy - an extension for Scoutbook",
   "private": true,
   "scripts": {
-    "test": "webpack --env.NODE_ENV=test --mode=development && jest ./test-dist/sbutils.test.js",
+    "test": "webpack --env.NODE_ENV=test --mode=development && jest ./test-dist/*.test.js",
     "watch": "webpack --watch --mode=development --progress",
     "build": "webpack --mode=development --progress",
     "dist": "webpack --mode=production --progress"
@@ -44,6 +44,7 @@
     "zip-webpack-plugin": "^3.0.0"
   },
   "dependencies": {
+    "email-validator": "^2.0.4",
     "jquery": "^3.4.1"
   }
 }

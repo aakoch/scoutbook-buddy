@@ -2,6 +2,9 @@
 //  You may use, distribute and modify this code for charitable use only.
 //  This code was developed to assist the Boy Scouts of America.
 
+// If testing, add this
+// import { cleanString } from "./common";
+
 /* function is injected.  Parses a line of csv data
  based on http://stackoverflow.com/questions/7431268/how-to-read-data-from-csv-file-using-javascript
  These two functions to be injected onto the page

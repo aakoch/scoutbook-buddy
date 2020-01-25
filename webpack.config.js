@@ -18,12 +18,10 @@ module.exports = (env, argv) => {
 
   // loop over modules/pages to dynamically create entries
   let items = fs.readdirSync(path.join(__dirname, "src"));
-  console.log(items);
 
   for (var i = 0; i < items.length; i++) {
     const filename = items[i];
     let fileprefix = filename.substr(0, items[i].indexOf("."));
-    console.log(fileprefix);
     if (items[i].includes(".js")) {
       sbfaFiles[fileprefix] = path.join(__dirname, "src", filename)
     }
@@ -33,33 +31,33 @@ module.exports = (env, argv) => {
 
   let entry, outputDir;
   if (env && env.NODE_ENV === 'test') {
-    entry = {
-      "sbutils.test": path.join(__dirname, "src") + "/sbutils.test.js"
-    },
-    //entryGlob(path.join(__dirname, "src") + "/sbutils.test.js");
-    outputDir = 'test-dist';
+    entry = entryGlob(path.join(__dirname, "src") + "/*.test.js");
+    output = {
+      filename: '[name].test.js',
+      path: path.resolve(__dirname, 'test-dist'),
+    };
   } else {
-  // entry = {
-  //   contentscript: path.join(__dirname, "src", "index.js"),
-  //   options: path.join(__dirname, "src", "options", "index.js"),
-  //   help: path.join(__dirname, "src", "help", "index.js"),
-  //   popup: path.join(__dirname, "src", "popup", "index.js"),
-  //   background: path.join(__dirname, "src", "background.js"),
-  //   tabIndicator: path.join(__dirname, "src", "tabIndicator.js"),
-  //   inject: path.join(__dirname, "src", "inject.js")
-  // }
+    // entry = {
+    //   contentscript: path.join(__dirname, "src", "index.js"),
+    //   options: path.join(__dirname, "src", "options", "index.js"),
+    //   help: path.join(__dirname, "src", "help", "index.js"),
+    //   popup: path.join(__dirname, "src", "popup", "index.js"),
+    //   background: path.join(__dirname, "src", "background.js"),
+    //   tabIndicator: path.join(__dirname, "src", "tabIndicator.js"),
+    //   inject: path.join(__dirname, "src", "inject.js")
+    // }
     entry = sbfaFiles;
-    outputDir = 'dist';
+    output = {
+      filename: '[name].js',
+      path: path.resolve(__dirname, 'dist'),
+    };
   }
 
   console.log("entry=", entry);
 
   return merge({}, {
     entry: entry,
-    output: {
-      filename: '[name].js',
-      path: path.resolve(__dirname, outputDir),
-    },
+    output: output,
     module: {
       rules: [
         //   {
@@ -102,10 +100,6 @@ module.exports = (env, argv) => {
         filename: "popup.html",
         chunks: ["popup"]
       }),
-      new CopyWebpackPlugin([{
-        from: "src/icons",
-        to: "./icons"
-      }]),
       new CopyWebpackPlugin([{
         from: "src",
         test: /.*\.png$/,
