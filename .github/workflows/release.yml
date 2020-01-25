@@ -1,4 +1,4 @@
-name: Create a Release
+name: Create a Release?
 
 on: 
   schedule:
