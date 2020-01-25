@@ -17,7 +17,7 @@ module.exports = (env, argv) => {
   let sbfaFiles = {};
 
   // loop over modules/pages to dynamically create entries
-  let items = fs.readdirSync(path.join(__dirname, "src", "sbfa"));
+  let items = fs.readdirSync(path.join(__dirname, "src"));
   console.log(items);
 
   for (var i = 0; i < items.length; i++) {
@@ -25,7 +25,7 @@ module.exports = (env, argv) => {
     let fileprefix = filename.substr(0, items[i].indexOf("."));
     console.log(fileprefix);
     if (items[i].includes(".js")) {
-      sbfaFiles[fileprefix] = path.join(__dirname, "src", "sbfa", filename)
+      sbfaFiles[fileprefix] = path.join(__dirname, "src", filename)
     }
   }
 
@@ -34,9 +34,9 @@ module.exports = (env, argv) => {
   let entry, outputDir;
   if (env && env.NODE_ENV === 'test') {
     entry = {
-      "sbutils.test": path.join(__dirname, "src", "sbfa") + "/sbutils.test.js"
+      "sbutils.test": path.join(__dirname, "src") + "/sbutils.test.js"
     },
-    //entryGlob(path.join(__dirname, "src", "sbfa") + "/sbutils.test.js");
+    //entryGlob(path.join(__dirname, "src") + "/sbutils.test.js");
     outputDir = 'test-dist';
   } else {
   // entry = {
@@ -93,12 +93,12 @@ module.exports = (env, argv) => {
         cleanStaleWebpackAssets: false,
       }),
       new HtmlWebpackPlugin({
-        template: path.join(__dirname, "src", "sbfa", "options.html"),
+        template: path.join(__dirname, "src", "options.html"),
         filename: "options.html",
         chunks: ["options"]
       }),
       new HtmlWebpackPlugin({
-        template: path.join(__dirname, "src", "sbfa", "popup.html"),
+        template: path.join(__dirname, "src", "popup.html"),
         filename: "popup.html",
         chunks: ["popup"]
       }),
@@ -107,12 +107,12 @@ module.exports = (env, argv) => {
         to: "./icons"
       }]),
       new CopyWebpackPlugin([{
-        from: "src/sbfa",
+        from: "src",
         test: /.*\.png$/,
       }]),
       new MergeJsonWebpackPlugin({
         "files": [
-          path.join("src", "sbfa", "manifest.json"),
+          path.join("src", "manifest.json"),
           //path.join("src", "manifest." + (process.env.NODE_ENV || "development")  + ".json")
           path.join("src", "manifest.development.json")
         ],
