@@ -103,12 +103,8 @@ module.exports = (env, argv) => {
         chunks: ["popup"]
       }),
       new CopyWebpackPlugin([{
-        from: "src/icons",
-        to: "./icons"
-      }]),
-      new CopyWebpackPlugin([{
-        from: "src/sbfa",
-        test: /.*\.png$/,
+        from: "src/sbfa/**/*.png",
+        to: path.join(__dirname, "dist")
       }]),
       new MergeJsonWebpackPlugin({
         "files": [
