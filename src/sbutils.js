@@ -1,3 +1,4 @@
+//import * as undo from "./undo";
 // sbutils.js
 // Copyright © 10/4/2017 Gary Feutz - All Rights Reserved
 //  You may use, distribute and modify this code for charitable use only.
@@ -474,7 +475,7 @@ function processRawData(data,type,thisurl) {
 
 		data=procRaw_Admin_XXXlog(data,thisurl,pageid);
 
-	 	data=addOverlay(data,thisurl,pageid);
+		data=addOverlay(data,thisurl,pageid);
 	}	
 	
 	data=procRaw_Help(data,thisurl,pageid);
@@ -486,7 +487,7 @@ function proc_AjaxSnippet(data,thisurl) {
 	// process an ajax response to insert calendar import link
 	data=proc_Ajax_InsertCalImportCSVLink(data);
 	data=proc_Ajax_InsertCalExportCSVLink(data);
-	data=addRawAddBirthdayAjax(data);
+	data=AddBirthdayAjax(data);
 	pokeSessionAjax(thisurl);
 	
 
@@ -1795,6 +1796,7 @@ function procProfileGetEditScouts(unitID,pageid) {
 }
 
 
+//export {procRaw_Dashboard_Admin_Advancement_Adventure, myPositions};
 
 
 
