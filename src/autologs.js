@@ -207,7 +207,7 @@ function checkLogAvail(logasp,pageid) {
 
 		if (this.readyState == 4 && this.status > 399  && this.status < 500) {
 			$.mobile.loading('hide');
-			$('#faOverlay').hide();
+			$('#faOverlay',pageid).hide();
 			alert('Error: '+ this.status);  //page not found etc.  This is unrecoverable
 			return;
 		}
@@ -225,7 +225,7 @@ function checkLogAvail(logasp,pageid) {
 			  //not avail
 			  showErrorPopup('You do not have the proper permissions to update logs');
 			  $.mobile.loading('hide');
-			  $('#faOverlay').hide();
+			  $('#faOverlay',pageid).hide();
 			  return;
 		  }
 		  autoFillLog(logasp,pageid);

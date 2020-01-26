@@ -2,7 +2,7 @@
    "name": "Scoutbook Buddy - SBFA Remix",
    "short_name": "SB Buddy",
    "version": "0.1.0",
-   "version_name": "0.44.0.7-REPACKAGE",
+   "version_name": "0.1.0 (0.45.0.1)",
    "manifest_version": 2,
    "author": "Gary Feutz - Repackaged by Adam A. Koch (aakoch)",
    "description": "Repackaging of Feature Assistant for Scoutbook: Extends Scoutbook functionality with calendar, quick entry, and summer camp import functions",
@@ -107,6 +107,7 @@
       "undo.js",
       "councilUser.js",
       "eventexport.js",
+      "logimport.js",
       "bindings.js"
    ],
    "externally_connectable": {

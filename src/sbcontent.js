@@ -116,6 +116,7 @@ function ldit() {
 		"undo.js",
 		"councilUser.js",
 		"eventexport.js",
+		"logimport.js",
 		"bindings.js"
 	  ];
     localPath();

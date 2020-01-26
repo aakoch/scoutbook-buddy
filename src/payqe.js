@@ -567,16 +567,14 @@ function mysubmitForm() {
 	// This function is inserted as submitForm() in the updated QE form
 function mySubmitForm() {	
 			// validate amounts
-			var fail = false;
-			var aok=0;
+			var aok=-1;
+			var failMsg='';
+			var failMsgT='';
+			var scoutSelected=false;
 			$('[name*=Amount]', '#PageX').each(function () {
 				var amount = $(this).val();
 				if (amount != '' && !validateCurrencyE(amount)) {
-					fail = true;
-					showErrorPopup('Amount must be 0.01 or more');
-					$.mobile.loading('hide');
-					$('#buttonCancel, #buttonSubmit, #buttonDelete', '#PageX').button('enable');
-					return false;
+					failMsgT='Amounts must be 0.01 or more. ';
 				} else {
 					if(amount != '') {
 						aok=amount;
@@ -584,57 +582,64 @@ function mySubmitForm() {
 				}
 			});
 			
-
+			failMsg += failMsgT;
+			failMsgT='';
 			// make sure any checked names have an amount
 			$('input[name="ScoutUserID"]:checked', '#PageX').each( function () {
+				scoutSelected=true;
 				var id=$(this).val();
-				if($('[name="Amount'+id+'"]', '#PageX').val() =='') {
-					showErrorPopup('Make sure Scouts checked have an Amount');
-					$.mobile.loading('hide');
-					$('#buttonCancel, #buttonSubmit, #buttonDelete', '#PageX').button('enable');
+				if($('[name="Amount'+id+'"]', '#PageX').val() =='' && $('[name="Amount'+id+'"]', '#PageX').attr('placeholder') =='') {
+					failMsgT='Make sure Scouts checked have an Amount. ';
 					fail=true;
 				}
 			});
+
+			failMsg += failMsgT;
+			failMsgT='';			
 			
-	
+			if(scoutSelected==false) {
+				fail = true;
+				failMsg += 'Select at least one Scout. ';
+			}
 			//xxxx
 			
 			
-			if (fail) return false;
 
+			
 			var dnow=new Date(Date.now());
 			var dt=$('input#logDate','#PageX').val();
 			if(dateDiff(dt,dnow)>0 || dt=='') {
-					$.mobile.loading('hide');
-					$('#buttonCancel, #buttonSubmit, #buttonDelete', '#PageX').button('enable');
-				showErrorPopup('Date cannot be blank or in the future');
-				return false;				
+				failMsg +='Date cannot be blank or in the future. ';
 			}	
-			
-			var ds=$('input#amount','#PageX').val();
-			if(ds=='') {
-				$('input#amount','#PageX').val(aok);
-				//debugger;
-				//showErrorPopup('Please enter an amount');
-				//return;				
-			}			
+
+			if(aok==-1) {
+				failMsg +='Please enter an amount. ';
+			} else {			
+				var ds=$('input#amount','#PageX').val();
+				if(ds=='') {
+					$('input#amount','#PageX').val(aok);			
+				}
+			}	
+
 			
 			
 			var ds=$('input#description','#PageX').val();
 			if(ds=='') {
-					$.mobile.loading('hide');
-					$('#buttonCancel, #buttonSubmit, #buttonDelete', '#PageX').button('enable');
-				showErrorPopup('Please enter a description');
-				return false;				
+				failMsg +='Please enter a description. ';
 			}
 
 
 			if($('input[name="PaymentType"]:checked','#PageX').val() =='None') {
-					$.mobile.loading('hide');
-					$('#buttonCancel, #buttonSubmit, #buttonDelete', '#PageX').button('enable');
-				alert('Select Payment Type');
-				return false;
+				failMsg +='Select Payment Type. ';
 			}				
+
+			if (failMsg != '') {
+				showErrorPopup(failMsg);
+				$.mobile.loading('hide');
+				$('#buttonCancel, #buttonSubmit, #buttonDelete', '#PageX').button('enable');				
+				return false;
+			}
+
 
 //save all scoutids, values, names, and notes
 			var pageArray=[];

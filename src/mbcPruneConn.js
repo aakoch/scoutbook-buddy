@@ -308,7 +308,7 @@ function restoreFinanceAccounts(pageid) {
 	
 	$('a[href*="account.asp?ScoutUserID="]').each( function () {
 		if($(this).attr('href').match(/ScoutUserID=(\d+)/)!=null) {
-			if($(this).text().match(/ACCOUNT,/) != null) {
+			if($(this).text().match(/^ACCOUNT,/) != null) {
 			//thisscout=$(this).attr('href').match(/ScoutUserID=(\d+)/)[1];
 				AccList.push({id:$(this).attr('href').match(/ScoutUserID=(\d+)/)[1],stat:false,posID:'',formpost:'',unitID:''});
 			}
@@ -356,20 +356,21 @@ function GetEndMembership(pageid,AccList) {
 			resetLogoutTimer(url);
 			servErrCnt=0;
 			
-			// if membership is current skip
-			if($('em',this.response).text() == 'No current membership data entered.') {
+			// if membership is current skip... test 1/26.  Maybe use to simply update date as well
+/*			if($('em',this.response).text() == 'No current membership data entered.') { */
 				//ok to restore.   Get the most recent membership
 				AccList[accPtr].posID=$('a[href*="membershipedit.asp?UserPositionID"]',this.response)[0].href.match(/UserPositionID=(\d+)/)[1];
 				setTimeout(function() {
 					PosDateEndMembership(pageid,AccList);
 				},50);				
 				
-			} else {
+/*			} else {
 				AccList[accPtr].stat=true;
 				setTimeout(function() {
 					GetEndMembership(pageid,AccList);
 				},50);
 			}
+*/
 		}
 	};
 		
@@ -411,7 +412,9 @@ function PosDateEndMembership(pageid,AccList) {
 			servErrCnt=0;	
 			formPost = $('#membershipForm', this.response).serialize();
 			formPost=tokenVal(formPost,'DateEnded','');
+			formPost=tokenVal(formPost,'DateStarted',encodeURIComponent( nowDate()));
 			AccList[accPtr].formpost=formPost;
+			
 
 			// get the patrol or DenID from submitForm funciton on page
 			$('script',this.response).each(function () {
@@ -475,7 +478,7 @@ function ClrDateEndMembership(pageid,AccList) {
 				return;
 			}
 	
-			// now need to approve
+			// now need to approve 
 			setTimeout(function() {
 				ApprvMembership(pageid,AccList);
 			},50);
@@ -505,7 +508,10 @@ function ApprvMembership(pageid,AccList) {
 		if(AccList[accPtr].stat==false) {
 			scoutID=AccList[accPtr].id;
 			posID=AccList[accPtr].posID;
-			formPost=AccList[accPtr].formpost + '&Approved=1';
+			formPost=AccList[accPtr].formpost;
+			if(formPost.match(/Approved=1/)==null) {
+				formPost+= '&Approved=1';
+			}
 			subUnit=AccList[accPtr].subUnit;
 			unitID=AccList[accPtr].unitID;
 			break;
