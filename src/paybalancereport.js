@@ -2130,7 +2130,6 @@ function convBB(msg) {
 	// this one may need to be escaped too
 	//msg=msg.replace(/\[\/url\]/g,'" target="_blank"></a>').replace(/\[url\]/g,'<a href="');
 	
-	
 	var urltxtpairs =msg.match(/\[url\]([^\[]*)\[\/url\]/g);
 	var urlLine;
 	if(urltxtpairs != null) {	
@@ -2139,8 +2138,7 @@ function convBB(msg) {
 			msg=msg.replace(urltxtpairs[i],'<a href="' + urlLine[1] + '" target="_blank">'+urlLine[1]+'</a>');
 		}
 	}	
-	
-	
+
 	return msg;
 }
 
