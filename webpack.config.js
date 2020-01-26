@@ -35,7 +35,8 @@ module.exports = (env, argv) => {
       popup: path.join(__dirname, "src", "popup", "index.js"),
       background: path.join(__dirname, "src", "background.js"),
       tabIndicator: path.join(__dirname, "src", "tabIndicator.js"),
-      inject: path.join(__dirname, "src", "inject.js")
+      inject: path.join(__dirname, "src", "inject.js"),
+      inject: path.join(__dirname, "src", "preview.js")
     }
     outputDir = 'dist';
   // }

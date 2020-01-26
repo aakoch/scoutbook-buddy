@@ -8,6 +8,10 @@ function handleMessage(request, sender, sendResponse) {
   if (request.event == 'pageshow') {
     sendAction('add-footer-indicator');
 
+    if (sender.url.includes('messages/default.asp')) {
+      injectPreviewButton();
+    }
+
     runPageShowHandlers();
   }
   else if (request.action == 'save-message') {
@@ -18,6 +22,35 @@ function handleMessage(request, sender, sendResponse) {
     };
     pageShowHandlers.push(function () { sendMessage(message) });
   }
+}
+
+function injectPreviewButton() {
+  logger.info("entering injectPreviewButton");
+  browser.tabs.query({
+    active: true,
+    url: '*://*.scoutbook.com/*'
+  }, function (tabs) {
+    if (tabs.length) {
+      var resourceUrl = browser.extension.getURL('scripts/preview.js');
+
+      const actualCode = `
+        var s = document.createElement('span');
+        s.id = 'scoutbookbuddyextensionid';
+        s.style = 'display:none';
+        s.innerText = '${chrome.runtime.id}';
+        (document.head || document.documentElement).appendChild(s);
+
+        var s = document.createElement('script');
+        s.src = '${resourceUrl}';
+        (document.head || document.documentElement).appendChild(s);
+      `;
+
+      browser.tabs.executeScript(tabs[0].id, {
+        code: actualCode,
+        runAt: 'document_idle'
+      });
+    }
+  });
 }
 
 function runPageShowHandlers() {

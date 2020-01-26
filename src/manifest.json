@@ -54,7 +54,8 @@
     "default_popup": "popup.html"
   },
   "web_accessible_resources": [
-    "scripts/inject.js"
+    "scripts/inject.js",
+    "scripts/preview.js"
   ],
   "externally_connectable": {
     "matches": ["*://*.scoutbook.com/*"]
