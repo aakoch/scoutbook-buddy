@@ -487,7 +487,7 @@ function proc_AjaxSnippet(data,thisurl) {
 	// process an ajax response to insert calendar import link
 	data=proc_Ajax_InsertCalImportCSVLink(data);
 	data=proc_Ajax_InsertCalExportCSVLink(data);
-	data=AddBirthdayAjax(data);
+	data=addRawAddBirthdayAjax(data);
 	pokeSessionAjax(thisurl);
 	
 
