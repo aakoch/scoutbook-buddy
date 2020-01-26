@@ -1,0 +1,30 @@
+{
+  "extensionName": {
+    "message": "Scoutbook Buddy",
+    "description": "The name of the extension"
+  },
+  "optionsPageTitle": {
+    "message": "Scoutbook Buddy Options",
+    "description": "Options Page Title"
+  },
+  "enableLoggingOptionLabel": {
+    "message": "Enable logging",
+    "description": "Logging option description"
+  },
+  "saved": {
+    "message": "Saved",
+    "description": "Message shown when option is saved"
+  },
+  "closeButtonLabel": {
+    "message": "Close",
+    "description": "Close button label"
+  },
+  "helpLinkLabel": {
+    "message": "Help",
+    "description": "Help link label"
+  },
+  "optionsLinkLabel": {
+    "message": "Options",
+    "description": "Options link label"
+  }
+}

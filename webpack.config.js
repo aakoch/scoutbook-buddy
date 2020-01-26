@@ -40,6 +40,8 @@ module.exports = (env, argv) => {
     entry = {
       options: path.join(__dirname, "src", "options.js"),
       popup: path.join(__dirname, "src", "popup.js"),
+      tabIndicator: path.join(__dirname, "src", "tabIndicator.js"),
+      contentscript: path.join(__dirname, "src", "index.js"),
     }
     output = {
       filename: '[name].js',
@@ -97,10 +99,12 @@ module.exports = (env, argv) => {
       new CopyWebpackPlugin([{
         from: "src",
         test: /.*\.png$/,
-      }]),
-      new CopyWebpackPlugin([{
+      }, {
         from: "src",
         test: /.*\b((?!options|popup)(?:.{1,}?)\.js).*/,
+      }, {
+        from: "src/_locales",
+        to: "./_locales",
       }]),
       new MergeJsonWebpackPlugin({
         "files": [
