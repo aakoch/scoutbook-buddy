@@ -933,12 +933,12 @@ function addTransFilter() {
 	var dscol;
 	var amcol;
 	var dtcol;
-	var nncil;
-	var lscol=payArray[0].length;
+	var nncol;
+
 	//payArray		
 	//0=BSA Member ID	1=First Name	2=Last Name	3=Payment Type	4=Date	5=Description	6=Amount	7=Transaction ID	8=Category	9=Notes
 
-	for(j=0;j<payArray[0].length;j++) {
+	for(var j=0;j<payArray[0].length;j++) {
 		if(payArray[0][j]=='First Name') {  
 			fncol=j;
 		}
@@ -959,20 +959,26 @@ function addTransFilter() {
 		}		
 	}	
 	var unitPay=false
-	for(i=0;i<payArray.length;i++) {
+	for(var i=0;i<payArray.length;i++) {
 
 		if(payArray[i][lncol]=="Account" && payArray[i][fncol] =='UnitPaylog') {
 			unitPay=true;
 		} 
-		payArray[i].push(true);  //add filter column
+		if(i==0) {
+			payArray[i].push(true); 
+		} else {
+			payArray[i].push('');  //add filter column
+		}
 	}	
+	var lscol=payArray[0].length-1;
+	
 	var eDescript='';
 	var rsDescript='';
 	if (unitPay==true) {
-		for(i=1;i<payArray.length;i++) {
+		for(var i=1;i<payArray.length;i++) {
 			payArray[i][lscol] = false;
 		}
-		for(i=1;i<payArray.length;i++) {
+		for(var i=1;i<payArray.length;i++) {
 			if(payArray[i][lncol]=="Account" && payArray[i][fncol] =='UnitPaylog') {
 				//Only look at non-unit account - these will trace back to the unit accounts
 			} else {
@@ -994,7 +1000,7 @@ function addTransFilter() {
 				}
 				//console.log(eDescript);
 				var inRow = 0
-				for(j=1;j<payArray.length;j++) {
+				for(var j=1;j<payArray.length;j++) {
 					if(payArray[j][lncol]=="Account" && payArray[j][fncol] =='UnitPaylog') {
 						
 					  if(payArray[i][dtcol]==payArray[j][dtcol]) {
@@ -1478,10 +1484,15 @@ function getParForRest(pageid,unitid) {
 	
 	if(i==payTotals.length) {
 		// no more parents to get
+		
+		// Attempt new descript column for sorting
+		
+		
 		payTotals.sort(sortObj);
 		payTotalsIn=payTotals.slice();
 		
 		addTransFilter();
+		addIntelliPayCol();
 		
 		payRpt=true;
 		$.mobile.changePage(
@@ -2024,7 +2035,7 @@ function setupSendMail(unitid,mailpageid,pageid) {
 						}
 					}
 					//debugger;
-					for(j=0;j<payTotals[i].parentids.length;j++) {
+					for(var j=0;j<payTotals[i].parentids.length;j++) {
 						if(j==0) {
 							data['ParentUserID']=[];
 						}
@@ -2130,6 +2141,7 @@ function convBB(msg) {
 	// this one may need to be escaped too
 	//msg=msg.replace(/\[\/url\]/g,'" target="_blank"></a>').replace(/\[url\]/g,'<a href="');
 	
+	
 	var urltxtpairs =msg.match(/\[url\]([^\[]*)\[\/url\]/g);
 	var urlLine;
 	if(urltxtpairs != null) {	
@@ -2138,7 +2150,8 @@ function convBB(msg) {
 			msg=msg.replace(urltxtpairs[i],'<a href="' + urlLine[1] + '" target="_blank">'+urlLine[1]+'</a>');
 		}
 	}	
-
+	
+	
 	return msg;
 }
 
@@ -2663,10 +2676,13 @@ function initTransReport(unitid,tpage,txtunit) {
 	var idcol;
 	var fncol;
 	var lncol;
+	var dscol;
+	var iscol;
+	var ficol;
 	//payArray		
 	//0=BSA Member ID	1=First Name	2=Last Name	3=Payment Type	4=Date	5=Description	6=Amount	7=Transaction ID	8=Category	9=Notes
 
-	for(j=0;j<payArray[0].length;j++) {
+	for(var j=0;j<payArray[0].length;j++) {
 		if(payArray[0][j]=='BSA Member ID') {  
 			idcol=j;
 		}
@@ -2676,6 +2692,15 @@ function initTransReport(unitid,tpage,txtunit) {
 		if(payArray[0][j]=='Last Name') {  
 			lncol=j;
 		}
+		if(payArray[0][j]=='Description') {  
+			dscol=j;
+		}
+		if(payArray[0][j]=='IDescription') {  
+			iscol=j;
+		}
+		if(payArray[0][j]==true) {  
+			ficol=j;
+		}		
 	}
 
 	var beginBalance=parseFloat('0');
@@ -2718,7 +2743,7 @@ function initTransReport(unitid,tpage,txtunit) {
 			html += '<th style="border-bottom: 1px solid #ddd;">' + escapeHTML(payArray[0][j]) + '</th>';
 		}
 		html += "</tr></thead>";
-	var ls=payArray[0].length-1;	
+	//var ls=payArray[0].length-1;	
 	for (var i=1;i<payArray.length;i++) {
 		if(payArray[i][5]!='No Payment History') {
 		
@@ -2745,7 +2770,7 @@ function initTransReport(unitid,tpage,txtunit) {
 				//if(payArray[i][ls]==true) {
 				//	console.log(payArray[i]);
 				//}
-				html += '<td name="Ln#"style="border-bottom: 1px solid #ddd; '+escapeHTML(aln)+'" data-baseval="'+ i +'" data-filter="'+payArray[i][ls]+'">' + i + '</td>';   // 6/4/2019
+				html += '<td name="Ln#"style="border-bottom: 1px solid #ddd; '+escapeHTML(aln)+'" data-baseval="'+ i +'" data-filter="'+payArray[i][ficol]+'">' + i + '</td>\n';   // 6/4/2019
 				
 				for (var j=1;j<10;j++ ) {
 
@@ -2767,19 +2792,24 @@ function initTransReport(unitid,tpage,txtunit) {
 						}
 					}
 					tdname=payArray[0][j].replace(/ /,'');
-					html += '<td name="'+ escapeHTML(tdname) +'"style="border-bottom: 1px solid #ddd; '+escapeHTML(aln)+'" data-baseval="'+ escapeHTML(payArray[i][j]) +'">' + escapeHTML(ln) + '</td>';
+					var baseval=payArray[i][j];
+					
+					if(j==dscol) {
+						baseval=payArray[i][iscol];
+					}
+					html += '<td name="'+ escapeHTML(tdname) +'"style="border-bottom: 1px solid #ddd; '+escapeHTML(aln)+'" data-baseval="'+ escapeHTML(baseval) +'">' + escapeHTML(ln) + '</td>\n';
 					
 				}
 				html += "</tr>";
 			}
 		}
 	}
-	html += '</tbody></table>';
+	html += '</tbody>\n</table>\n';
 
     //console.log(html);
 
 
-	html=localDataFilter (html,'','local');
+	html=localDataFilter (html,'','local');					//For testing - name changing
 	$('#transCSV',tpage).attr("style","height:40px;");		//make visible
 	//$('#ulTbl',tpage).attr("style","margin-top: 0;");		//make visible  change classe
 	$('#ulTbl',tpage).removeClass('noprint');
@@ -2791,10 +2821,10 @@ function initTransReport(unitid,tpage,txtunit) {
 	//payArray		
 	//0=BSA Member ID	1=First Name	2=Last Name	3=Payment Type	4=Date	5=Description	6=Amount	7=Transaction ID	8=Category	9=Notes
 	
-	
 	var orderlist=[[0,1,3,4],[1,0,3,4],[2,3,1,0],[3,1,0,4],[4,1,0,3],[5,1,0,3],[6,1,0,3],[7,1,0,3],[8,1,0,3]];
 	// 0=Ln# 1=First Name	2=Last Name	3=Payment Type	4=Date	5=Description	6=Amount	7=Transaction ID	8=Category	9=Notes
 	var orderlist=[[0,4,5,2],[1,2,4,5],[2,1,4,5],[3,4,2,1],[4,2,1,5],[5,2,1,4],[6,2,1,4],[7,2,1,4],[8,2,1,4],[9,2,1,4]];	// 6/4/2019
+	var orderlist=[[0,4,5,2],[1,2,4,5],[2,1,4,5],[3,4,2,1],[4,5,2,1],[5,2,1,4],[6,2,1,4],[7,2,1,4],[8,2,1,4],[9,2,1,4]];	// 1/15/2020
 	
 	$("th",tpage).css("cursor", "pointer");
 	$("#transreport th",tpage).click( function () {
@@ -2904,17 +2934,20 @@ function initTransReport(unitid,tpage,txtunit) {
 			tbl[i][0].data=i;
 		}
 			
+		// Place-replace cell borders
+
 		
 		var tblc=0;
 		var rwc=0;
 		//'#transreport tr:not(".borderBottom")'
 		i=0;
+		var lastDesc='';
+		var bk='ffffff';			
 		$('#transreport tbody tr',tpage).each(function () {
 			var thisrw=this;
-
-			
 			rwc=0;
 
+			var extT=false;
 			$("td",this).each(function () {
 				$(this).html(tbl[tblc][rwc].txt);
 				$(this).attr('data-baseval',tbl[tblc][rwc].data);
@@ -2922,6 +2955,7 @@ function initTransReport(unitid,tpage,txtunit) {
 				if(rwc==0) {
 					//if this is a filtered line hide or display
 					if($('#ExternalTransactions',tpage).prop('checked')==true && $(this).attr('data-filter')=="true") {
+						extT=true;
 						$(thisrw).attr('style',"display:none;");
 						$(this).text('');	// blank it out.  Useful for export filtering
 					} else {
@@ -2930,16 +2964,35 @@ function initTransReport(unitid,tpage,txtunit) {
 						i+=1;
 					}					
 				}
+				if(rwc==5 && $('#ExternalTransactions',tpage).prop('checked')==false) {			// the 5th td is the description
+					if(idx==4) {		// if the sort choice was by date
+						if($(this).attr('data-baseval') !=lastDesc) {
+							if(bk=='ffffff') {
+								bk='f6f6f6';
+							} else {
+								bk='ffffff';
+							}
+							lastDesc=$(this).attr('data-baseval');
+						}
+						var dsp='';
+						if($(thisrw).attr('style')=="display:none;") {
+							dsp="display:none;";
+						}
+						$(thisrw).attr('style',"background-color: #"+bk+" ; "+dsp);
+					}						
+				}
 				rwc+=1;
+				
 			});
 			tblc+=1;
 		});
+
 		$('body').css("background","#ffffff");
 	});	
 
 	//$('#transreport thead th:eq(3)').trigger('click');
 	
-	$('#transreport thead th:eq(4)',tpage).trigger('click');	//sort
+	$('#transreport thead th:eq(4)',tpage).trigger('click');	//sort on column 4, date
 
 	$('body').css('background','#ffffff');
 
@@ -3142,4 +3195,141 @@ function logTime(dt) {
 	}
 var d=new Date(dt);
 return d.getMonth()+1 +'/'+ d.getDate() + '/'+d.getFullYear()+' '+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()+'.'+d.getMilliseconds();
+}
+
+
+// is UntiPaylog present?
+// If so, add names to descript, else just copy descript
+
+function addIntelliPayCol() {
+	var fncol;
+	var lncol;
+	var dscol;
+	var amcol;
+	var dtcol;
+	var nncol;
+	var lscol=payArray[0].length;
+	//payArray		
+	//0=BSA Member ID	1=First Name	2=Last Name	3=Payment Type	4=Date	5=Description	6=Amount	7=Transaction ID	8=Category	9=Notes
+
+	for(var j=0;j<payArray[0].length;j++) {
+		if(payArray[0][j]=='First Name') {  
+			fncol=j;
+		}
+		if(payArray[0][j]=='Last Name') {  
+			lncol=j;
+		}
+		if(payArray[0][j]=='Description') {  
+			dscol=j;
+		}
+		if(payArray[0][j]=='Amount') {  
+			amcol=j;
+		}
+		if(payArray[0][j]=='Date') {  
+			dtcol=j;
+		}
+		if(payArray[0][j]=='Nickname') {  
+			nncol=j;
+		}		
+	}	
+	var unitPay=false
+	for(var i=1;i<payArray.length;i++) {
+
+		if(payArray[i][lncol]=="Account" && payArray[i][fncol] =='UnitPaylog') {
+			unitPay=true;
+		} 
+	}	
+	
+	payArray[0].push('IDescription');
+	var nm='';
+	if(unitPay==false) {
+		for(var i=1;i<payArray.length;i++) {	
+			payArray[i].push(payArray[i][dscol]);
+		}
+	} else {
+		//if it is a UnitPaylog trans, do not modify the description
+		
+		for(var i=1;i<payArray.length;i++) {	
+			nm=payArray[i][fncol];
+			if(payArray[i][nncol]!="") {
+				nm=payArray[i][nncol];
+			}
+				
+			if(payArray[i][lncol]=="Account" && payArray[i][fncol] =='UnitPaylog') {
+				payArray[i].push(payArray[i][dscol]);
+			} else {
+				// RemovedScout transactions are special
+				if(payArray[i][lncol]=="Account" && payArray[i][fncol] =='RemovedScout') {
+					/*Removed Scout descriptions  will be format Joey S then the description
+					  If a matching transaction was in UnitPaylog BEFORE the records were copied into UnitPaylog, then
+						 unitPaylog record is the format 'description for S, Joey'
+						 and we need to re-arrange to fix it
+					
+ 					  Else if transaction happened AFTER copy, unitPaylog would have format 'Joey S descript for A, RemovedScout'
+					     and it looks like a standard Scout.  So the question, is how to tell?
+						 Painful way...  look through all UnitPaylog transactions to find these exceptions.  Any with A, RemovedScout
+						 are after, and based on date and amount and description can be determined
+					*/
+					var eDescript = payArray[i][dscol];
+					var res = payArray[i][dscol].match(/([ a-zA-Z]+) ([a-zA-Z]) (.+)/);
+					if(res != null) {
+						eDescript = res[3] + " for " + res[2] + ", " + res[1];
+					}
+					if(altRS(payArray[i],payArray[i][dscol] + " for " + payArray[i][lncol][0] + ", " + nm) == true) {
+						eDescript=payArray[i][dscol] + " for " + payArray[i][lncol][0] + ", " + nm;
+					}
+					payArray[i].push(eDescript);
+				} else {
+					//standard Scout.  Modify descript to add for 
+					payArray[i].push( payArray[i][dscol] + " for " + payArray[i][lncol][0] + ", " + nm);
+				}					
+			}
+		}
+	}	
+}
+
+function altRS(payRec,payDesc) {
+	var fncol;
+	var lncol;
+	var dscol;
+	var amcol;
+	var dtcol;
+	var nnc0l;
+	var lscol=payArray[0].length;
+	//payArray		
+	//0=BSA Member ID	1=First Name	2=Last Name	3=Payment Type	4=Date	5=Description	6=Amount	7=Transaction ID	8=Category	9=Notes
+
+	for(var j=0;j<payArray[0].length;j++) {
+		if(payArray[0][j]=='First Name') {  
+			fncol=j;
+		}
+		if(payArray[0][j]=='Last Name') {  
+			lncol=j;
+		}
+		if(payArray[0][j]=='Description') {  
+			dscol=j;
+		}
+		if(payArray[0][j]=='Amount') {  
+			amcol=j;
+		}
+		if(payArray[0][j]=='Date') {  
+			dtcol=j;
+		}
+		if(payArray[0][j]=='Nickname') {  
+			nncol=j;
+		}		
+	}	
+	
+		for(var i=1;i<payArray.length;i++) {	
+			if(payArray[i][dtcol] == payRec[dtcol]) {		
+				if(payArray[i][lncol]=="Account" && payArray[i][fncol] =='UnitPaylog') {
+					if(payArray[i][dscol] == payDesc) {
+						if(payArray[i][amcol].replace('-','') == payRec[amcol].replace('-','')) {
+							return true;
+						}
+					}
+				}
+			}
+		}			
+		return false;
 }

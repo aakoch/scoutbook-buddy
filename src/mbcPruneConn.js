@@ -20,7 +20,7 @@ function addRawMyConnection(data,thisurl,pageid){
 
 	var startfunc=data.indexOf("$('a.removeConnection");
 	var myfunc = '' + rcscript;
-	myfunc = myfunc.slice(22).slice(0,-1).replace(/\#PageX/g,'#Page' + escapeHTML(pageid)).replace(/UnitID=X/g,'UnitID='+ escapeHTML(unitID));
+	myfunc = myfunc.slice(22).slice(0,-1).replace(/\#PageX/g,'#Page' + escapeHTML(pageid));
     data = data.slice(0,startfunc) + myfunc + '\n'  + data.slice(startfunc);	
 	return data;
 }
@@ -40,14 +40,25 @@ function delcons(data) {
 	newdata+='					</a>';
 	newdata+='				</div>';
 	newdata+='				<div class="clearRight"></div>';
-
+	newdata+='				<div style=" text-align: right; " >'; 
+	newdata+='					<a data-role="button" data-theme="d" data-inline="true" data-mini="true" href="#" id="buttonRestoreFinance">';
+	newdata+='						<div style="margin-left: 30px;  ">'; //position: relative;
+	newdata+='							Restore Finance Scout Accounts';
+	newdata+='						</div>';
+	newdata+='					</a>';
+	newdata+='				</div>';
+	newdata+='				<div class="clearRight"></div>';
 	return newdata;	
 }
 
 function rcscript() {
-	$('#buttonDelCons').click( function () {
+	$('#buttonDelCons','#PageX').click( function () {
 		showDelCons();		
 	});
+
+	$('#buttonRestoreFinance','#PageX').click( function () {
+		restoreFinanceAccounts('#PageX');
+	});	
 }
 
 
@@ -291,3 +302,243 @@ function mbScoutPagemarkup(mbScouts) {
 	$.mobile.loading('hide');
 }
 //floatRight" style="margin-top: 3px; margin-right: -5px;"
+
+function restoreFinanceAccounts(pageid) {
+	var AccList=[];
+	
+	$('a[href*="account.asp?ScoutUserID="]').each( function () {
+		if($(this).attr('href').match(/ScoutUserID=(\d+)/)!=null) {
+			if($(this).text().match(/ACCOUNT,/) != null) {
+			//thisscout=$(this).attr('href').match(/ScoutUserID=(\d+)/)[1];
+				AccList.push({id:$(this).attr('href').match(/ScoutUserID=(\d+)/)[1],stat:false,posID:'',formpost:'',unitID:''});
+			}
+		}
+	});
+	
+	if(AccList.length != 0) {
+		$.mobile.loading('show', { theme: 'a', text: 'Loading...', textonly: false });
+		$('#faOverlay',pageid).show();
+		GetEndMembership(pageid,AccList);
+	} else {
+		alert('No ACCOUNT memberships exist');
+	}
+}
+
+
+function endRestore(pageid,msg) {
+		$.mobile.loading('hide');
+		$('#faOverlay',pageid).hide();
+		alert(msg);	
+}
+function GetEndMembership(pageid,AccList) {
+	
+	var unitID='';
+	var accPtr;
+	var scoutID=''
+	for(accPtr=0;accPtr<AccList.length;accPtr++) {
+		if(AccList[accPtr].stat==false) {
+			scoutID=AccList[accPtr].id;
+			break;
+		}
+	}
+	
+	if(scoutID=='') {
+		endRestore(pageid,'Restore complete');	
+		return;
+	}		
+	
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status != 200) {
+			errStatusHandle(this.status,'',[],  GetEndMembership,[pageid,AccList]);
+		}
+		if (this.readyState == 4 && this.status == 200) {
+			resetLogoutTimer(url);
+			servErrCnt=0;
+			
+			// if membership is current skip
+			if($('em',this.response).text() == 'No current membership data entered.') {
+				//ok to restore.   Get the most recent membership
+				AccList[accPtr].posID=$('a[href*="membershipedit.asp?UserPositionID"]',this.response)[0].href.match(/UserPositionID=(\d+)/)[1];
+				setTimeout(function() {
+					PosDateEndMembership(pageid,AccList);
+				},50);				
+				
+			} else {
+				AccList[accPtr].stat=true;
+				setTimeout(function() {
+					GetEndMembership(pageid,AccList);
+				},50);
+			}
+		}
+	};
+		
+	
+	var url = 'https://' + host + 'scoutbook.com/mobile/dashboard/admin/membership.asp?ScoutUserID='+scoutID+'&UnitID='+unitID;
+
+	xhttp.open("GET",url , true);
+	xhttp.responseType="document";
+
+	xhttp.send();
+	xhttp.onerror = function() {
+		errStatusHandle(this.status,'',[],  GetEndMembership,[pageid,AccList]);
+	};
+}
+
+
+
+function PosDateEndMembership(pageid,AccList) {
+	
+	var accPtr;
+	var scoutID=''
+	var posID='';
+	var subUnit;
+	for(accPtr=0;accPtr<AccList.length;accPtr++) {
+		if(AccList[accPtr].stat==false) {
+			scoutID=AccList[accPtr].id;
+			posID=AccList[accPtr].posID;
+			break;
+		}
+	}	
+	
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status != 200) {
+			errStatusHandle(this.status,'',[],  PosDateEndMembership,[pageid,AccList]);
+		}
+		if (this.readyState == 4 && this.status == 200) {
+			resetLogoutTimer(url);
+			servErrCnt=0;	
+			formPost = $('#membershipForm', this.response).serialize();
+			formPost=tokenVal(formPost,'DateEnded','');
+			AccList[accPtr].formpost=formPost;
+
+			// get the patrol or DenID from submitForm funciton on page
+			$('script',this.response).each(function () {
+				if($(this).text().match(/membershipedit\.asp\?UserPositionID=\d+&ScoutUserID=\d+&UnitID=\d+&DenID=\d*&PatrolID=\d*/) != null) {
+					var subUnit=$(this).text().match(/membershipedit\.asp\?UserPositionID=\d+&ScoutUserID=\d+&UnitID=\d+(&DenID=\d*&PatrolID=\d*)/)[1];
+					AccList[accPtr].subUnit=subUnit;
+					AccList[accPtr].unitID==$(this).text().match(/membershipedit\.asp\?UserPositionID=\d+&ScoutUserID=\d+&UnitID=(\d+)&DenID=\d*&PatrolID=\d*/)[1];
+				}
+			});
+
+			setTimeout(function() {
+				ClrDateEndMembership(pageid,AccList);
+			},50);				
+			
+		}
+	};
+
+
+	var url = 'https://' + host + 'scoutbook.com/mobile/dashboard/admin/membershipedit.asp?UserPositionID='+posID+'&ScoutUserID='+scoutID
+
+	xhttp.open("GET",url , true);
+	xhttp.responseType="document";
+
+	xhttp.send();
+	xhttp.onerror = function() {
+		errStatusHandle(this.status,'',[],  PosDateEndMembership,[pageid,AccList]);
+	};
+}
+
+
+function ClrDateEndMembership(pageid,AccList) {
+	
+	var accPtr;
+	var scoutID='';
+	var posID='';
+	var formPost='';
+	var subUnit='';
+	var unitID;
+	for(accPtr=0;accPtr<AccList.length;accPtr++) {
+		if(AccList[accPtr].stat==false) {
+			scoutID=AccList[accPtr].id;
+			posID=AccList[accPtr].posID;
+			formPost=AccList[accPtr].formpost;
+			subUnit=AccList[accPtr].subUnit;
+			unitID=AccList[accPtr].unitID;
+			break;
+		}
+	}	
+	
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status != 200) {
+			errStatusHandle(this.status,'',[],  ClrDateEndMembership,[pageid,AccList]);
+		}
+		if (this.readyState == 4 && this.status == 200) {
+			resetLogoutTimer(url);
+			servErrCnt=0;	
+			
+			if(this.response.match(/\$\.mobile\.changePage/) == null) {	
+				endRestore(pageid,'Error restoring End Date');	
+				return;
+			}
+	
+			// now need to approve
+			setTimeout(function() {
+				ApprvMembership(pageid,AccList);
+			},50);
+	
+		}
+	};
+	
+    var url= 'https://' + host + 'scoutbook.com/mobile/dashboard/admin/membershipedit.asp?UserPositionID='+posID+'&ScoutUserID='+scoutID+'&UnitID='+unitID+subUnit;
+	xhttp.open("POST", url, true);
+	xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xhttp.send(formPost);
+			
+	xhttp.onerror = function() {
+		errStatusHandle(this.status,'',[],  ClrDateEndMembership,[pageid,AccList]);
+	};	
+}
+
+
+function ApprvMembership(pageid,AccList) {
+	
+	var accPtr;
+	var scoutID='';
+	var posID='';
+	var formPost='';
+	var subUnit='';
+	for(accPtr=0;accPtr<AccList.length;accPtr++) {
+		if(AccList[accPtr].stat==false) {
+			scoutID=AccList[accPtr].id;
+			posID=AccList[accPtr].posID;
+			formPost=AccList[accPtr].formpost + '&Approved=1';
+			subUnit=AccList[accPtr].subUnit;
+			unitID=AccList[accPtr].unitID;
+			break;
+		}
+	}	
+	
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status != 200) {
+			errStatusHandle(this.status,'',[],  ApprvMembership,[pageid,AccList]);
+		}
+		if (this.readyState == 4 && this.status == 200) {
+			resetLogoutTimer(url);
+			servErrCnt=0;	
+			
+			if(this.response.match(/\$\.mobile\.changePage/) == null) {	
+				endRestore(pageid,'Error Restoring -Re-Approving');	
+				return;
+			}
+			AccList[accPtr].stat=true;
+			setTimeout(function() {
+				GetEndMembership(pageid,AccList);
+			},50);
+	
+		}
+	};
+	
+    var url= 'https://' + host + 'scoutbook.com/mobile/dashboard/admin/membershipedit.asp?UserPositionID='+posID+'&ScoutUserID='+scoutID+'&UnitID='+unitID+subUnit;
+	xhttp.open("POST", url, true);
+	xhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+	xhttp.send(formPost);
+			
+	xhttp.onerror = function() {
+		errStatusHandle(this.status,'',[],  ApprvMembership,[pageid,AccList]);
+	};	
+}

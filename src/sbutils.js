@@ -1,4 +1,3 @@
-//import * as undo from "./undo";
 // sbutils.js
 // Copyright © 10/4/2017 Gary Feutz - All Rights Reserved
 //  You may use, distribute and modify this code for charitable use only.
@@ -473,6 +472,8 @@ function processRawData(data,type,thisurl) {
 		
 		data=procRaw_Dashboard_Reports_CouncilUser(data,thisurl,pageid);
 
+		data=procRaw_Admin_XXXlog(data,thisurl,pageid);
+
 	 	data=addOverlay(data,thisurl,pageid);
 	}	
 	
@@ -485,7 +486,7 @@ function proc_AjaxSnippet(data,thisurl) {
 	// process an ajax response to insert calendar import link
 	data=proc_Ajax_InsertCalImportCSVLink(data);
 	data=proc_Ajax_InsertCalExportCSVLink(data);
-	data=AddBirthdayAjax(data);
+	data=addRawAddBirthdayAjax(data);
 	pokeSessionAjax(thisurl);
 	
 
@@ -797,6 +798,17 @@ function addOverlay(data,thisurl,pageid) {
 			
 	return data;
 }
+
+function procRaw_Admin_XXXlog(data,thisurl,pageid) {
+	if(thisurl.match(/admin\/(hiking|camping|service)log\.asp/) != null ) {
+		if(thisurl.match(/UserID=\d+/)==null) {
+			data=addRawLogImport(data,thisurl,pageid);
+		}
+	}
+	return data;
+}
+
+
 function procRaw_Dashboard(data,thisurl,pageid) {
 
 	if(thisurl.match(/dashboard\/./) == null ) {
@@ -972,7 +984,7 @@ function procRaw_Dashboard_Admin_Advancement_Adventure(data,thisurl,pageid) {
 	if(thisurl.match(/dashboard\/admin\/advancement\/adventure\.asp/) != null  || thisurl.match(/dashboard\/admin\/advancement\/meritbadge\.asp/) != null  || thisurl.match(/dashboard\/admin\/awards\/award\.asp/) != null ) {
 		//var unitID= /UnitID\=(\d+)/.exec(thisurl)[1]; 
 
-		data=undo.addRawUndo(data,pageid);
+		data=addRawUndo(data,pageid);
 	}
 	return data;	
 }
@@ -990,7 +1002,6 @@ function procRaw_Dashboard_Reports_CouncilUser(data,thisurl,pageid) {
 	return data;
 
 }
-
 function procRaw_Admin_Advancement_Meritbadgequickentry(data,thisurl,pageid) {
 			
 	if(thisurl.match(/dashboard\/admin\/advancement\/meritbadgequickentry\.asp/) != null ) {
@@ -1784,4 +1795,7 @@ function procProfileGetEditScouts(unitID,pageid) {
 }
 
 
-//export {procRaw_Dashboard_Admin_Advancement_Adventure, myPositions};
+
+
+
+
