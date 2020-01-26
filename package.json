@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "test": "webpack --env.NODE_ENV=test --mode=development && jest ./test-dist/*.test.js",
-    "watch": "webpack --watch --mode=development --progress",
+    "watch": "webpack --env.NODE_ENV=develop --watch --mode=development --progress",
     "build": "webpack --mode=development --progress",
     "dist": "webpack --mode=production --progress"
   },

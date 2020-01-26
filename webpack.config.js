@@ -37,16 +37,10 @@ module.exports = (env, argv) => {
       path: path.resolve(__dirname, 'test-dist'),
     };
   } else {
-    // entry = {
-    //   contentscript: path.join(__dirname, "src", "index.js"),
-    //   options: path.join(__dirname, "src", "options", "index.js"),
-    //   help: path.join(__dirname, "src", "help", "index.js"),
-    //   popup: path.join(__dirname, "src", "popup", "index.js"),
-    //   background: path.join(__dirname, "src", "background.js"),
-    //   tabIndicator: path.join(__dirname, "src", "tabIndicator.js"),
-    //   inject: path.join(__dirname, "src", "inject.js")
-    // }
-    entry = sbfaFiles;
+    entry = {
+      options: path.join(__dirname, "src", "options.js"),
+      popup: path.join(__dirname, "src", "popup.js"),
+    }
     output = {
       filename: '[name].js',
       path: path.resolve(__dirname, 'dist'),
@@ -103,6 +97,10 @@ module.exports = (env, argv) => {
       new CopyWebpackPlugin([{
         from: "src",
         test: /.*\.png$/,
+      }]),
+      new CopyWebpackPlugin([{
+        from: "src",
+        test: /.*\b((?!options|popup)(?:.{1,}?)\.js).*/,
       }]),
       new MergeJsonWebpackPlugin({
         "files": [
