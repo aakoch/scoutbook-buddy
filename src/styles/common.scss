@@ -1,3 +1,6 @@
+@import "../styles/reset";
+@import "../styles/variables";
+
 @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 @import url('https://fonts.googleapis.com/css?family=Roboto+Slab&display=swap');
 
@@ -101,4 +104,8 @@ button {
     top: 1px;
     left: 1px;
   }
+}
+
+.buddy.buddy-highlight {
+  border: solid yellow 4px;
 }
