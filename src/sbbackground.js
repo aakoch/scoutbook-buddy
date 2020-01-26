@@ -126,10 +126,12 @@ var othURLTime = [];
 
 chrome.runtime.onMessage.addListener(function (msgobj, sender) {
 	logDebug('msgobj=' + msgobj);
-	if (!!msgobj.event) {
+	try {
+	ev = JSON.parse(msgobj.msg);
+	} catch (e) {
+		console.log('Error: ' + e + '. Could not parse msgobj=', msgobj);
 		return;
 	}
-	ev = JSON.parse(msgobj.msg);
 
 	logDebug('New message event rcv in background: ' + ev.text);
 
