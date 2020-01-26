@@ -12,6 +12,7 @@ function addFooterIndicator() {
   // TODO: move the style into a SASS file
   $("body", document)
     .prepend("<div id='scoutbookbuddyindicator' style='font-family: \"Roboto\", sans-serif; font-weight: normal; font-size: 12px; position: fixed; bottom: 0; right: 5px; opacity: 30%; z-index: 1'>Scoutbook Buddy Activated</div>");
+
 }
 addFooterIndicator();
 
