@@ -97,6 +97,9 @@ module.exports = (env, argv) => {
         chunks: ["popup"]
       }),
       new CopyWebpackPlugin([{
+        from: "src/icons",
+        to: "./icons"
+      }, {
         from: "src",
         test: /.*\.png$/,
       }, {
