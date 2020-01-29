@@ -42,7 +42,7 @@ function handleMessage(request, sender, sendResponse) {
         logger.info("scoutbook buddy indicator not found");
         addFooterIndicator();
       } else {
-        logger.info("scoutbook buddy indicator found");
+        logger.info(new Date(), "scoutbook buddy indicator found");
       }
     }, 600); // not sure the wait is needed anymore now that I have the MutationObserver
   } else if (request.action === 'heartbeat') {
@@ -118,6 +118,9 @@ $(document).on('click', '.ui-btn,#buttonSubmit', function (e) {
       'body': body
     };
     browser.runtime.sendMessage(browser.runtime.id, request);
+    browser.runtime.sendMessage(browser.runtime.id, {
+      event: 'inject-page-listeners', source: 'click'
+    });
   }
 });
 
@@ -132,18 +135,18 @@ let observer = new MutationObserver(function (mutations) {
       if (attributeValue.includes('ui-mobile-viewport-transitioning')) {
         // don't do anything
       } else {
-        logger.debug("pageshow event might have taken place");
         clearTimeout(pageShowTimeout);
         pageShowTimeout = setTimeout(() => {
+          logger.debug(new Date(), ": pageshow event might have taken place: ", attributeValue);
           browser.runtime.sendMessage(browser.runtime.id, {
-            event: 'pageshow'
+            event: 'inject-page-listeners', source: 'mutationObserver'
           });
-        }, 200);
+        }, 50);
       }
     }
   });
 });
-observer.observe($("body")[0], {
+observer.observe($("body", document)[0], {
   attributes: true
 });
 // *****************************************************************************
@@ -153,6 +156,15 @@ browser.runtime.onMessage.addListener(handleMessage);
 // not sure I need this anymore now that I have the MutationObserver
 (window || self).addEventListener('message', function (e) {
   logger.debug('contentscript.js window message received. Event=', e);
+});
+
+var port = chrome.runtime.connect({name: "knockknock"});
+port.postMessage({joke: "Knock knock"});
+port.onMessage.addListener(function(msg) {
+  if (msg.question == "Who's there?")
+    port.postMessage({answer: "Madame"});
+  else if (msg.question == "Madame who?")
+    port.postMessage({answer: "Madame... Bovary"});
 });
 
 logger.debug('contentscript.js loaded');

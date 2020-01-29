@@ -24,6 +24,8 @@
   "permissions": [
     "tabs",
     "storage",
+    "webRequest",
+    "webRequestBlocking",
     "http://*.scoutbook.com/*",
     "https://*.scoutbook.com/*"
   ],
@@ -35,9 +37,10 @@
         "https://*.scoutbook.com/*"
       ],
       "js": [
-        "scripts/contentscript.js"
+        "scripts/contentscript.js",
+        "listeners.js"
       ],
-      "run_at": "document_idle",
+      "run_at": "document_end",
       "all_frames": false
     }
   ],
@@ -55,7 +58,10 @@
   },
   "web_accessible_resources": [
     "scripts/inject.js",
-    "scripts/preview.js"
+    "scripts/preview.js",
+    "scripts/jquery.js",
+    "listeners.js",
+    "scripts/eventlisteners.js"
   ],
   "externally_connectable": {
     "matches": ["*://*.scoutbook.com/*"]

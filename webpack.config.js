@@ -35,8 +35,10 @@ module.exports = (env, argv) => {
       popup: path.join(__dirname, "src", "popup", "index.js"),
       background: path.join(__dirname, "src", "background.js"),
       tabIndicator: path.join(__dirname, "src", "tabIndicator.js"),
+      jquery: path.join(__dirname, "src", "jquery.js"),
       inject: path.join(__dirname, "src", "inject.js"),
-      inject: path.join(__dirname, "src", "preview.js")
+      preview: path.join(__dirname, "src", "preview.js"),
+      eventlisteners: path.join(__dirname, "src", "eventlisteners.js")
     }
     outputDir = 'dist';
   // }
@@ -107,6 +109,9 @@ module.exports = (env, argv) => {
       }, {
         from: "src/_locales",
         to: "./_locales",
+      }, {
+        from: "src/listeners.js",
+        to: "./listeners.js",
       }]),
       new MergeJsonWebpackPlugin({
         "files": [
