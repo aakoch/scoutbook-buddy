@@ -34,8 +34,6 @@ function addRawSubunitMsgSel(data, thisurl, pageid) {
 	//add new buttonsubmit function
 
 	if (data.match(/\$\('#buttonSubmit', '#Page\d+'\)\.click\(function/) != null) {
-
-
 		var oldname = data.match(/\$\('#buttonSubmit', '#Page\d+'\)\.click\(function/)[0];
 		var newname = oldname.replace(/#buttonSubmit/, '#buttonNewSubmit');
 		data = data.replace(/\$\('#buttonSubmit', '#Page\d+'\)\.click\(function/, newname);
@@ -44,8 +42,8 @@ function addRawSubunitMsgSel(data, thisurl, pageid) {
 
 		data = data.slice(0, startfunc) + "\n$('#buttonSubmit','#Page" + pageid + "').click( function () {\n addMeToSender(" + pageid + ");\nreturn false;\n});\n" + data.slice(startfunc);
 	}
-	var startfunc = data.indexOf('</form>');
 
+	var startfunc = data.indexOf('</form>');
 	var newdata = '	<div style="margin-top: 1.5em; margin-bottom: 2em; display:none ">\n';
 	newdata += '			<input type="submit" value="Send Message" data-theme="g" id="buttonNewSubmit" />\n';
 	newdata += '		</div>\n';
@@ -58,7 +56,6 @@ function addRawSubunitMsgSel(data, thisurl, pageid) {
 	newdata += '			<label for="nameLst">Include names in message when BCC is selected</label>\n';
 	newdata += '			<input type="checkbox" name="NAMELST" value="1" id="nameLst" data-theme="d" checked="checked" />\n';
 	newdata += '		</div>\n';
-
 	newdata += '	   <div id="yptDIV">\n';
 	newdata += '			<label for="ypt">Include Youth Protection Notice in youth messages</label>\n';
 	newdata += '			<input type="checkbox" name="YPT" value="1" id="ypt" data-theme="d" checked="checked" />\n';
@@ -149,151 +146,42 @@ function mlscript() {
 		}
 	});
 }
-
 function subunitClick(pageid) {
 	$('.subunit', pageid).click(function () {
-		var scoutname;
-		var parentname;
-		var thispar;
-		var parsplit;
-		var lsubunit;
-		var precheckList = [];
-		//var subunitList=[];
-		var subunit = '';
-		if ($(this).text().trim().match(/(Pack|Troop|Crew|Ship) \d+ (.+)/) != null) {
-			subunit = $(this).text().trim().match(/(Pack|Troop|Crew|Ship) \d+ (.+)/)[2];
-		}
-		var subunitid = $(this).attr('data-subunitid');
+		let $this = $(this);
+		let subunitid = $this.data('subunitid');
 
-		var idx = -1;
-		for (idx = 0; idx < subUnitList.length; idx++) {
-			if (subUnitList[idx].id == subunitid) {
-				break;
-			}
+		if ($this.text().trim().match(/(Pack|Troop|Crew|Ship) \d+ (.+)/) != null) {
+			subunit = $this.text().trim().match(/(Pack|Troop|Crew|Ship) \d+ (.+)/)[2];
 		}
 
-		if (idx == subUnitList.length) {
-			alert('can\'t match ' + subunit);
-			return;
-		}
-		if ($(this).hasClass('ui-btn-up-d')) {
+		if ($this.hasClass('ui-btn-up-d')) {
 			//item is unchecked
 			// alert('add check to this');
 
-			for (var i = 0; i < subUnitList[idx].leader.length; i++) {
-				$('.leader.checkable[data-userid="' + subUnitList[idx].leader[i] + '"]').append('<div class="full-circle"><img src="https://d3hdyt7ugiz6do.cloudfront.net/images/icons/checkmark256.png"></div>').removeClass('ui-btn-up-d').addClass('ui-btn-up-e');
-			}
-			for (var i = 0; i < subUnitList[idx].parent.length; i++) {
-				$('.parent.checkable[data-userid="' + subUnitList[idx].parent[i] + '"]').append('<div class="full-circle"><img src="https://d3hdyt7ugiz6do.cloudfront.net/images/icons/checkmark256.png"></div>').removeClass('ui-btn-up-d').addClass('ui-btn-up-e');
-			}
-			for (var i = 0; i < subUnitList[idx].scout.length; i++) {
-				$('.scout.checkable[data-userid="' + subUnitList[idx].scout[i] + '"]').append('<div class="full-circle"><img src="https://d3hdyt7ugiz6do.cloudfront.net/images/icons/checkmark256.png"></div>').removeClass('ui-btn-up-d').addClass('ui-btn-up-e');
-			}
+			let leaders = Array.from($this.data('leader'));
+			let parents = Array.from($this.data('parent'));
+			let scouts = Array.from($this.data('scout'));
+
+			leaders.forEach(leader => {
+				$('.leader.checkable[data-userid="' + leader + '"]').append('<div class="full-circle"><img src="https://d3hdyt7ugiz6do.cloudfront.net/images/icons/checkmark256.png"></div>').removeClass('ui-btn-up-d').addClass('ui-btn-up-e').addClass(subunitid);
+			});
+			parents.forEach(parent => {
+				$('.parent.checkable[data-userid="' + parent + '"]').append('<div class="full-circle"><img src="https://d3hdyt7ugiz6do.cloudfront.net/images/icons/checkmark256.png"></div>').removeClass('ui-btn-up-d').addClass('ui-btn-up-e').addClass(subunitid);
+			});
+			scouts.forEach(scout => {
+				$('.scout.checkable[data-userid="' + scout + '"]').append('<div class="full-circle"><img src="https://d3hdyt7ugiz6do.cloudfront.net/images/icons/checkmark256.png"></div>').removeClass('ui-btn-up-d').addClass('ui-btn-up-e').addClass(subunitid);
+			});
 		} else {
 			// item is checked
-			$('.subunit.checkable.ui-btn-up-e').each(function () {
-				//this subunit is checked
-				var subid = $(this).attr('data-subunitid');
-
-
-
-				//if(subunit != lsubunit)
-
-				for (var i = 0; i < subUnitList.length; i++) {
-					if (subUnitList[i].id == subid && subid != subunitid) { // find the array item that is set, but not the one that is being clicked now
-						for (var j = 0; j < subUnitList[i].leader.length; j++) {
-							precheckList.push({
-								who: 'leader',
-								id: subUnitList[i].leader[j]
-							});
-						}
-						for (var j = 0; j < subUnitList[i].parent.length; j++) {
-							precheckList.push({
-								who: 'parent',
-								id: subUnitList[i].parent[j]
-							});
-						}
-						for (var j = 0; j < subUnitList[i].scout.length; j++) {
-							precheckList.push({
-								who: 'scout',
-								id: subUnitList[i].scout[j]
-							});
-						}
-					}
-				}
-
+			$('.checkable.ui-btn-up-e.' + subunitid).removeClass(subunitid).filter((i, el) => {
+				return !/(Den|Patrol)/.test($(el).attr('class'));
+			}).each((i, el) => {
+				$(el).removeClass('ui-btn-up-e').addClass('ui-btn-up-d').find('div.full-circle').remove();
 			});
-
-
-			//prechecklist contains any list items that must remain checked, because they are checked due to another subunit check
-			//now, go thru all .checkable.ui-btn-up-e , if not in list, uncheck
-
-			//uncheck anything that isn't in pre and is in current idx
-
-			var found = false;
-			$('.leader.checkable.ui-btn-up-e').each(function () {
-				found = false;
-				for (var i = 0; i < precheckList.length; i++) {
-					if ($(this).attr('data-userid') == precheckList[i].id && precheckList[i].who == 'leader') {
-						found = true;
-						break;
-					}
-				}
-				if (found == false) {
-					for (var i = 0; i < subUnitList[idx].leader.length; i++) {
-						if ($(this).attr('data-userid') == subUnitList[idx].leader[i]) {
-							$('div.full-circle', this).remove();
-							$(this).removeClass('ui-btn-up-e').addClass('ui-btn-up-d');
-							break;
-						}
-					}
-				}
-			});
-
-			$('.parent.checkable.ui-btn-up-e').each(function () {
-				found = false;
-				for (var i = 0; i < precheckList.length; i++) {
-					if ($(this).attr('data-userid') == precheckList[i].id && precheckList[i].who == 'parent') {
-						found = true;
-						break;
-					}
-				}
-				if (found == false) {
-					for (var i = 0; i < subUnitList[idx].parent.length; i++) {
-						if ($(this).attr('data-userid') == subUnitList[idx].parent[i]) {
-							$('div.full-circle', this).remove();
-							$(this).removeClass('ui-btn-up-e').addClass('ui-btn-up-d');
-							break;
-						}
-					}
-				}
-			});
-
-
-			$('.scout.checkable.ui-btn-up-e').each(function () {
-				found = false;
-				for (var i = 0; i < precheckList.length; i++) {
-					if ($(this).attr('data-userid') == precheckList[i].id && precheckList[i].who == 'scout') {
-						found = true;
-						break;
-					}
-				}
-				if (found == false) {
-					for (var i = 0; i < subUnitList[idx].scout.length; i++) {
-						if ($(this).attr('data-userid') == subUnitList[idx].scout[i]) {
-							$('div.full-circle', this).remove();
-							$(this).removeClass('ui-btn-up-e').addClass('ui-btn-up-d');
-							break;
-						}
-					}
-				}
-			});
-
 		}
-
 	});
 }
-
 
 function subunitmark() {
 	$('.subunit.checkable').click(function () {
@@ -404,13 +292,8 @@ function startGetSubunits(unitID, subUnitScouts, preset) {
 		});
 }
 
-
 function fetchPatrols(unitID, subUnitScouts, subUnitList, preset) {
-
-	var jqxhs = [];
-
-	subUnitList.forEach(subunit => {
-
+	let jqxhs = subUnitList.map(subunit => {
 		var denID = ''
 		if (/DenID(\d+)/.test(subunit.id)) {
 			denID = subunit.id.match(/DenID(\d+)/)[1];
@@ -422,41 +305,27 @@ function fetchPatrols(unitID, subUnitScouts, subUnitList, preset) {
 
 		var url = 'https://' + document.location.hostname.split('.')[0] + '.scoutbook.com/mobile/dashboard/messages/default.asp?UnitID=' + encodeURIComponent(unitID) + '&DenID=' + encodeURIComponent(denID) + '&PatrolID=' + encodeURIComponent(patrolID);
 
-		jqxhs.push($.get(url, (data, textStatus, jqXHR) => {
-				$('.leader.checkable.checked', data).each(() => {
-					subunit.leader.push($(this).data('userid'));
-				})
-				$('.parent.checkable.checked', data).each(() => {
-					subunit.parent.push($(this).data('userid'));
-				})
-				$('.scout.checkable.checked', data).each(() => {
-					subunit.scout.push($(this).data('userid'));
-				})
+		let targetElement = $('#denpatrolUL li[data-subunitid="' + subunit.id + '"]');
+
+		return $.ajax({
+				url: url,
+				context: targetElement,
+				success: function (data, textStatus, jqXHR) {
+					let returnUserIdFunc = (i, el) => $(el).data('userid');
+					let subunit = {
+						leader: $('.leader.checkable.checked', data).map(returnUserIdFunc),
+						parent: $('.parent.checkable.checked', data).map(returnUserIdFunc),
+						scout: $('.scout.checkable.checked', data).map(returnUserIdFunc),
+					};
+					$(this).data(subunit);
+				}
 			})
 			.fail((jqXHR, textStatus, errorThrown) => {
-				var status = jqXHR.status,
-					errfunc = '',
-					errargs = [],
-					retryfunc = fetchPatrols,
-					retryargs = [unitID, subUnitScouts, [], preset];
-
-				var pageid = '';
-				$('#faOverlay').hide();
-				if (status > 399 && status < 500) {
-					$.mobile.loading('hide');
-
-					alert('Error: ' + status); //page not found etc.  This is unrecoverable
-					if (errfunc != '') {
-						window[errfunc.name].apply(null, errargs);
-					}
-				}
-				else if (status > 499) {
-					errGenHandle(pageid, errfunc, errargs, retryfunc, retryargs); //server side error - maybe next try will work
-				}
-			}));
+					console.error('Error on ajax call. Status=' + textStatus + ': ' + errorThrown);
+			});
 	});
 
-	jqxhs[jqxhs.length - 1].always(() => {
+	$.when(...jqxhs).then(() => {
 		$.mobile.loading('hide');
 		$('#denPatrolDv').show();
 	})
@@ -469,7 +338,6 @@ function addMeToSender(pageid) {
 	//clear garbage from sender
 
 	//formPost=formPost.replace(/CustomGroupID=[^&]*&/,'').replace(/CustGrpName=[^&]*&/,'');
-
 
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function () {
@@ -523,7 +391,6 @@ function addMeToSender(pageid) {
 			}
 
 			return;
-
 		}
 	};
 	var url = 'https://' + host + 'scoutbook.com/mobile/dashboard/';
@@ -550,14 +417,14 @@ function includeDisclaimer() {
 		//console.log(ev.namestr,ev.scoutpresent);
 
 		var disclaim = '';
-		if ($('input[name="YPT"]').is(':checked') == true) {
-			if (ev.scoutpresent == true) {
+		if ($('input[name="YPT"]').is(':checked')) {
+			if (ev.scoutpresent) {
 				disclaim = "Scouts! In keeping with Youth Protection's no one-on-one contact rules, please remember to CC your parents when replying to this message.\n";
 				disclaim += "Adults! In keeping with Youth Protection's no one-on-one contact rules, please remember to CC any Scout's parents if you include a Scout in a reply.\n\n";
 			}
 		}
-		if ($('input[name="BCC"]').is(':checked') == true) {
-			if ($('input[name="NAMELST"]').is(':checked') == true) {
+		if ($('input[name="BCC"]').is(':checked')) {
+			if ($('input[name="NAMELST"]').is(':checked')) {
 				disclaim += 'This message was sent to : ' + ev.namestr;
 			}
 		}
@@ -623,16 +490,8 @@ function getRecipientNames(res) {
 
 		}
 	});
-	res.namestr = '';
-	for (var i = 0; i < namelist.length; i++) {
-		if (res.namestr == '') {
-			res.namestr = namelist[i];
-		} else {
-			res.namestr += ', ' + namelist[i];
-		}
-	}
 
-	return;
+	res.namestr = namelist.join(', ');
 }
 
 $.noConflict(true)
