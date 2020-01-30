@@ -20,7 +20,7 @@ function addRawSubunitMsgSel(data, thisurl, pageid) {
 
 	var startfunc = data.indexOf("$('#buttonInsertEvents',");
 	var myfunc = '' + mlscript;
-	myfunc = myfunc.slice(22).slice(0,-1).replace(/\#PageX/g,'#Page' + escapeHTML(pageid)).replace(/UnitID\s*=\s*X/g,'UnitID='+ escape(unitID));
+	myfunc = myfunc.slice(22).slice(0, -1).replace(/\#PageX/g, '#Page' + escapeHTML(pageid)).replace(/UnitID\s*=\s*X/g, 'UnitID=' + escape(unitID));
 	var data = data.slice(0, startfunc) + myfunc + '\n' + data.slice(startfunc);
 
 
@@ -419,9 +419,9 @@ function fetchPatrols(unitID, subUnitScouts, subUnitList, preset) {
 		if (/PatrolID(\d+)/.test(subunit.id)) {
 			patrolID = subunit.id.match(/PatrolID(\d+)/)[1];
 		}
-	
-		var url = 'https://' + document.location.hostname.split('.')[0] + 'scoutbook.com/mobile/dashboard/messages/default.asp?UnitID=' + encodeURIComponent(unitID) + '&DenID=' + encodeURIComponent(denID) + '&PatrolID=' + encodeURIComponent(patrolID);
-	
+
+		var url = 'https://' + document.location.hostname.split('.')[0] + '.scoutbook.com/mobile/dashboard/messages/default.asp?UnitID=' + encodeURIComponent(unitID) + '&DenID=' + encodeURIComponent(denID) + '&PatrolID=' + encodeURIComponent(patrolID);
+
 		jqxhs.push($.get(url, (data, textStatus, jqXHR) => {
 				$('.leader.checkable.checked', data).each(() => {
 					subunit.leader.push($(this).data('userid'));
@@ -434,8 +434,25 @@ function fetchPatrols(unitID, subUnitScouts, subUnitList, preset) {
 				})
 			})
 			.fail((jqXHR, textStatus, errorThrown) => {
-				// aakoch - this probably won't produce the results you want. I haven't yet looked at errStatusHandle
-				errStatusHandle(jqXHR.status, '', [], fetchPatrols, [unitID, subUnitScouts, [], preset]);
+				var status = jqXHR.status,
+					errfunc = '',
+					errargs = [],
+					retryfunc = fetchPatrols,
+					retryargs = [unitID, subUnitScouts, [], preset];
+
+				var pageid = '';
+				$('#faOverlay').hide();
+				if (status > 399 && status < 500) {
+					$.mobile.loading('hide');
+
+					alert('Error: ' + status); //page not found etc.  This is unrecoverable
+					if (errfunc != '') {
+						window[errfunc.name].apply(null, errargs);
+					}
+				}
+				else if (status > 499) {
+					errGenHandle(pageid, errfunc, errargs, retryfunc, retryargs); //server side error - maybe next try will work
+				}
 			}));
 	});
 
@@ -618,4 +635,4 @@ function getRecipientNames(res) {
 	return;
 }
 
-$.noConflict( true )
+$.noConflict(true)
