@@ -434,7 +434,8 @@ function fetchPatrols(unitID, subUnitScouts, subUnitList, preset) {
 				})
 			})
 			.fail((jqXHR, textStatus, errorThrown) => {
-				errStatusHandle(jqXHR.status, '', [], iterMailSubunitChecks, [unitID, subUnitScouts, preset]);
+				// aakoch - this probably won't produce the results you want. I haven't yet looked at errStatusHandle
+				errStatusHandle(jqXHR.status, '', [], fetchPatrols, [unitID, subUnitScouts, [], preset]);
 			}));
 	});
 
