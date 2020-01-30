@@ -594,29 +594,12 @@ function setTimePeriod(beforewarn, warntime) {
 
 }
 
-// Force load if content script when extension is loaded	getAll may not be supported 
-chrome.windows.getAll({
-	populate: true
-}, function (windows) {
-	var i = 0,
-		w = windows.length,
-		currentWindow;
-	for (; i < w; i++) {
-		currentWindow = windows[i];
-		var j = 0,
-			t = currentWindow.tabs.length,
-			currentTab;
-		for (; j < t; j++) {
-			currentTab = currentWindow.tabs[j];
-			// Skip chrome:// and https:// pages
-			if (currentTab.url != undefined) {
-				//console.log(currentTab.url,currentTab.id);
-				chrome.tabs.update(currentTab.id, {
-					url: currentTab.url
-				});
-			}
-		}
-	}
+chrome.tabs.query({
+  url: '*://*.scoutbook.com/*'
+}, function (tabs) {
+  tabs.forEach((tab) => {
+    chrome.tabs.reload(tab.id);
+  });
 });
 
 function logDebug(msg) {
