@@ -12,51 +12,51 @@
 
 
 function rowparse(data) {
-	var entries=[];
-	var q_cnt;
-	var lastfield='';
-	var field2check='';
-	
-	data.split(',').forEach(function (field) {
-		if(field == '') {
-			if (lastfield=='') {
-				entries.push('');
-			} else {
-				// get next field
-			}
-		} else {
-			field2check=lastfield +field;
-			if (field2check.match(/"/g) == null) {
-				q_cnt=0;
-			} else {
-				q_cnt = field2check.match(/"/g).length;
-			}
-			if (parseInt(q_cnt)/2 == Math.trunc(parseInt(q_cnt)/2)) {
-			  
-			  entries.push(field2check);
+    var entries = [];
+    var q_cnt;
+    var lastfield = '';
+    var field2check = '';
 
-			  field2check='';
-			  lastfield='';
-			} else {
-				// add next field and try again
-				lastfield = field2check + ',';
-				field2check='';
-			}
-		}
-		
-	});
-	//remove escape quote containers
-  for(var i=0;i<entries.length;i++) {
-	  entries[i]=entries[i].trim();
-	  if(entries.length > 1) {
-		  if(entries[i][0] == '"' && entries[i][entries[i].length-1] == '"') {
-			  entries[i] = entries[i].slice(1,entries[i].length-1);
-		  }
-		  entries[i] = entries[i].replace(/""/g,'"');
-	  }
- 	  //console.log(entries[i]);
-  }
-  return entries;	
+    data.split(',').forEach(function(field) {
+        if (field == '') {
+            if (lastfield == '') {
+                entries.push('');
+            } else {
+                // get next field
+            }
+        } else {
+            field2check = lastfield + field;
+            if (field2check.match(/"/g) == null) {
+                q_cnt = 0;
+            } else {
+                q_cnt = field2check.match(/"/g).length;
+            }
+            if (parseInt(q_cnt) / 2 == Math.trunc(parseInt(q_cnt) / 2)) {
+
+                entries.push(field2check);
+
+                field2check = '';
+                lastfield = '';
+            } else {
+                // add next field and try again
+                lastfield = field2check + ',';
+                field2check = '';
+            }
+        }
+
+    });
+    //remove escape quote containers
+    for (var i = 0; i < entries.length; i++) {
+        entries[i] = entries[i].trim();
+        if (entries.length > 1) {
+            if (entries[i][0] == '"' && entries[i][entries[i].length - 1] == '"') {
+                entries[i] = entries[i].slice(1, entries[i].length - 1);
+            }
+            entries[i] = entries[i].replace(/""/g, '"');
+        }
+        //console.log(entries[i]);
+    }
+    return entries;
 }
 /*
 function rowparse(row){
@@ -84,7 +84,7 @@ function rowparse(row){
 }
 */
 
-var injrowparse= rowparse;
+var injrowparse = rowparse;
 
 /* function is injected. Splits a CSV file into lines to be parsed, returns parsed file
 
@@ -100,50 +100,49 @@ aggregate quote count is even
 
 
 function parseCSV(data) {
-	data=cleanString(data);	// gets rid of excel junk chars
-	var fres=[];
-	
+    data = cleanString(data); // gets rid of excel junk chars
+    var fres = [];
 
-	var endline='\n';
-	if(data.indexOf('\r\n') != -1) {
-		endline='\r\n';		//windows
-	} else {
-		if(data.indexOf('\r') != -1) {
-			endline='\r';		//windows	
-		}		
-	}
-	var q_cnt;
-	var lastrow='';
-	var row2check='';
-	data.split(endline).forEach(function (row) {
-		
-		if(row != "") {
-			row2check=lastrow +row;
-			if(row2check.match(/"/g)==null) {
-				q_cnt=0;
-			} else {
-				q_cnt = row2check.match(/"/g).length;
-			}
-			if (parseInt(q_cnt)/2 == Math.trunc(parseInt(q_cnt)/2)) {
-				// add next line and try again
-			
-			  if(rowparse(row2check) != "") {
-				fres.push(rowparse(row2check));
-			  }
-			  row2check='';
-			  lastrow='';
-			} else {
-				lastrow = row2check + '\n'; 
-				row2check='';
-			}
-		} else {
-			lastrow += '\n';
-		}
 
-	});
-		
-   return fres;
+    var endline = '\n';
+    if (data.indexOf('\r\n') != -1) {
+        endline = '\r\n'; //windows
+    } else {
+        if (data.indexOf('\r') != -1) {
+            endline = '\r'; //windows	
+        }
+    }
+    var q_cnt;
+    var lastrow = '';
+    var row2check = '';
+    data.split(endline).forEach(function(row) {
+
+        if (row != "") {
+            row2check = lastrow + row;
+            if (row2check.match(/"/g) == null) {
+                q_cnt = 0;
+            } else {
+                q_cnt = row2check.match(/"/g).length;
+            }
+            if (parseInt(q_cnt) / 2 == Math.trunc(parseInt(q_cnt) / 2)) {
+                // add next line and try again
+
+                if (rowparse(row2check) != "") {
+                    fres.push(rowparse(row2check));
+                }
+                row2check = '';
+                lastrow = '';
+            } else {
+                lastrow = row2check + '\n';
+                row2check = '';
+            }
+        } else {
+            lastrow += '\n';
+        }
+
+    });
+
+    return fres;
 }
 
-var injparse= parseCSV;
-
+var injparse = parseCSV;

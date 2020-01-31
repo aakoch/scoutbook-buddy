@@ -8,11 +8,11 @@
 // });
 
 function fakeConsole() {
-  return {
-    log: function () {},
-    info: function () {},
-    debug: function () {}
-  };
+    return {
+        log: function() {},
+        info: function() {},
+        debug: function() {}
+    };
 }
 
 let isProduction = process.env.NODE_ENV === 'production';

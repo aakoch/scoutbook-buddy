@@ -1,11 +1,10 @@
-
-setTimeout(function () {
-	//only change the page if it is not in the signup process || display of login process
-	if(document.baseURI.indexOf('/mobile/signup') == -1 && window.location.search.substring(1).indexOf("ShowLogin=1") === -1) {
-		//console.log('changepage on timeout',document.baseURI);
-		changepageurl(document.baseURI);
-	}
-},800);
+setTimeout(function() {
+    //only change the page if it is not in the signup process || display of login process
+    if (document.baseURI.indexOf('/mobile/signup') == -1 && window.location.search.substring(1).indexOf("ShowLogin=1") === -1) {
+        //console.log('changepage on timeout',document.baseURI);
+        changepageurl(document.baseURI);
+    }
+}, 800);
 /*
 future reliability enhancements for server or network errors
 
@@ -52,28 +51,27 @@ Unloading a function may disable all extensions
 ***********************************************/
 
 
-if (typeof Funclist == 'undefined' ) {
-	var Funclist = function() {
-		var _funcDefs = [];
-		Object.defineProperties(this, {
-			"funcDefs": {
-				get: function() {
-					return _funcDefs.concat();
-				}
-			},
-			"addFuncDef": {
-				value: function(funcDef) {
-					_funcDefs.push(funcDef);
-				}
-			}
-		});
-	};
+if (typeof Funclist == 'undefined') {
+    var Funclist = function() {
+        var _funcDefs = [];
+        Object.defineProperties(this, {
+            "funcDefs": {
+                get: function() {
+                    return _funcDefs.concat();
+                }
+            },
+            "addFuncDef": {
+                value: function(funcDef) {
+                    _funcDefs.push(funcDef);
+                }
+            }
+        });
+    };
 
-	var bindToFilter = new Funclist();
-	asetup(bindToFilter,0);
+    var bindToFilter = new Funclist();
+    asetup(bindToFilter, 0);
 
 }
 
 
 bindToFilter.addFuncDef(faFilter);
-
