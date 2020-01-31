@@ -107,20 +107,22 @@ $(document).on('click', 'li.checkable', function (e) {
 });
 
 $(document).on('click', '.ui-btn,#buttonSubmit', function (e) {
-  logger.debug('contentscript.js radio or submit button was clicked - should we save the email?');
-  // TODO: 'keepContentID' is part of sbfa so this will only work if it is there
-  if (document.getElementById('keepContentID') && document.getElementById('keepContentID').checked) {
-    const subject = $('#subject', document).val();
-    const body = $('#body', document).val();
-    const request = {
-      'action': 'save-message',
-      'subject': subject,
-      'body': body
-    };
-    browser.runtime.sendMessage(browser.runtime.id, request);
-    browser.runtime.sendMessage(browser.runtime.id, {
-      event: 'inject-page-listeners', source: 'click'
-    });
+  if (document.location.pathname.includes('messages/default.asp')) {
+    // logger.debug('contentscript.js radio or submit button was clicked - should we save the email?');
+    // TODO: 'keepContentID' is part of sbfa so this will only work if it is there
+    if (document.getElementById('keepContentID') && document.getElementById('keepContentID').checked) {
+      const subject = $('#subject', document).val();
+      const body = $('#body', document).val();
+      const request = {
+        'action': 'save-message',
+        'subject': subject,
+        'body': body
+      };
+      browser.runtime.sendMessage(browser.runtime.id, request);
+      browser.runtime.sendMessage(browser.runtime.id, {
+        event: 'inject-page-listeners', source: 'click'
+      });
+    }
   }
 });
 
