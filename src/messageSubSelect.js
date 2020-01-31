@@ -146,6 +146,7 @@ function mlscript() {
 		}
 	});
 }
+
 function subunitClick(pageid) {
 	$('.subunit', pageid).click(function () {
 		let $this = $(this);
@@ -293,42 +294,44 @@ function startGetSubunits(unitID, subUnitScouts, preset) {
 }
 
 function fetchPatrols(unitID, subUnitScouts, subUnitList, preset) {
-	let jqxhs = subUnitList.map(subunit => {
-		var denID = ''
-		if (/DenID(\d+)/.test(subunit.id)) {
-			denID = subunit.id.match(/DenID(\d+)/)[1];
-		}
-		var patrolID = ''
-		if (/PatrolID(\d+)/.test(subunit.id)) {
-			patrolID = subunit.id.match(/PatrolID(\d+)/)[1];
-		}
+  let jqxhs = subUnitList.map(subunit => {
+    var denID = ''
+    if (/DenID(\d+)/.test(subunit.id)) {
+      denID = subunit.id.match(/DenID(\d+)/)[1];
+    }
+    var patrolID = ''
+    if (/PatrolID(\d+)/.test(subunit.id)) {
+      patrolID = subunit.id.match(/PatrolID(\d+)/)[1];
+    }
 
-		var url = 'https://' + document.location.hostname.split('.')[0] + '.scoutbook.com/mobile/dashboard/messages/default.asp?UnitID=' + encodeURIComponent(unitID) + '&DenID=' + encodeURIComponent(denID) + '&PatrolID=' + encodeURIComponent(patrolID);
+    var url = 'https://' + document.location.hostname.split('.')[0] +
+      '.scoutbook.com/mobile/dashboard/messages/default.asp?UnitID=' + encodeURIComponent(unitID) + '&DenID=' +
+      encodeURIComponent(denID) + '&PatrolID=' + encodeURIComponent(patrolID);
 
-		let targetElement = $('#denpatrolUL li[data-subunitid="' + subunit.id + '"]');
+    let targetElement = $('#denpatrolUL li[data-subunitid="' + subunit.id + '"]');
 
-		return $.ajax({
-				url: url,
-				context: targetElement,
-				success: function (data, textStatus, jqXHR) {
-					let returnUserIdFunc = (i, el) => $(el).data('userid');
-					let subunit = {
-						leader: $('.leader.checkable.checked', data).map(returnUserIdFunc),
-						parent: $('.parent.checkable.checked', data).map(returnUserIdFunc),
-						scout: $('.scout.checkable.checked', data).map(returnUserIdFunc),
-					};
-					$(this).data(subunit);
-				}
-			})
-			.fail((jqXHR, textStatus, errorThrown) => {
-					console.error('Error on ajax call. Status=' + textStatus + ': ' + errorThrown);
-			});
-	});
+    return $.ajax({
+        url: url,
+        context: targetElement,
+        success: function(data, textStatus, jqXHR) {
+          let returnUserIdFunc = (i, el) => $(el).data('userid');
+          let subunit = {
+            leader: $('.leader.checkable.checked', data).map(returnUserIdFunc),
+            parent: $('.parent.checkable.checked', data).map(returnUserIdFunc),
+            scout: $('.scout.checkable.checked', data).map(returnUserIdFunc),
+          };
+          $(this).data(subunit);
+        }
+      })
+      .fail((jqXHR, textStatus, errorThrown) => {
+        console.error('Error on ajax call. Status=' + textStatus + ': ' + errorThrown);
+      });
+  });
 
-	$.when(...jqxhs).then(() => {
-		$.mobile.loading('hide');
-		$('#denPatrolDv').show();
-	})
+  $.when(...jqxhs).then(() => {
+    $.mobile.loading('hide');
+    $('#denPatrolDv').show();
+  })
 }
 
 
