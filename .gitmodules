@@ -1,3 +1,3 @@
-[submodule "featureassistant"]
-	path = featureassistant
+[submodule "src/featureassistant"]
+	path = src/featureassistant
 	url = https://aakoch@bitbucket.org/scoutbookextensions/featureassistant.git
