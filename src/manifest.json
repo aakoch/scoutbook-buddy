@@ -42,6 +42,17 @@
       ],
       "run_at": "document_end",
       "all_frames": false
+    },
+    {
+      "matches": [
+        "http://*.scoutbook.com/*",
+        "https://*.scoutbook.com/*"
+      ],
+      "js": [
+        "scripts/init.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
     }
   ],
   "browser_action": {

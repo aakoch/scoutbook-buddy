@@ -23,7 +23,7 @@
       pagebeforehide: {}
     },
     extensionId = document.getElementById('scoutbookbuddyextensionid').innerText,
-    activePageId = window.$.mobile.activePage[0].id;
+    activePageId = window.$.mobile.activePage && window.$.mobile.activePage[0].id;
 
   if (!document.buddywindow) {
 
@@ -44,12 +44,12 @@
           if (event.target.id == activePageId) {
             clearTimeout(value);
             value = setTimeout(() => {
-              chrome.runtime.sendMessage(extensionId, {
+              chrome.runtime.sendMessage(extensionId, JSON.stringify({
                 event: key,
                 activePageId: activePageId,
                 eventType: event.type,
                 eventTargetId: event.target.id
-              });
+              }));
             }, 100);
           } else {
             if (key == 'pageremove') {
@@ -74,10 +74,10 @@
       });
 
     setInterval(() => {
-      chrome.runtime.sendMessage(extensionId, {
+      chrome.runtime.sendMessage(extensionId, JSON.stringify({
         event: 'inject-heartbeat',
         activePageId: activePageId
-      });
+      }));
     }, 500);
 
     window.addEventListener('message', handleMessage);

@@ -16,9 +16,9 @@ let activeTab;
 
     // if we're on the messages page the other script should take care of it?
     if (activeTab.url.includes('messages/default.asp')) {
-      browser.tabs.sendMessage(activeTab.id, {
+      browser.tabs.sendMessage(activeTab.id, JSON.stringify({
         action: 'get-selected-count'
-      }, renderSelectedCount);
+      }), renderSelectedCount);
     } else {
       renderPopup();
     }

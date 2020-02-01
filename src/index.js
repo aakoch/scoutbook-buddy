@@ -118,10 +118,10 @@ $(document).on('click', '.ui-btn,#buttonSubmit', function (e) {
         'subject': subject,
         'body': body
       };
-      browser.runtime.sendMessage(browser.runtime.id, request);
-      browser.runtime.sendMessage(browser.runtime.id, {
+      browser.runtime.sendMessage(browser.runtime.id, JSON.stringify(request));
+      browser.runtime.sendMessage(browser.runtime.id, JSON.stringify({
         event: 'inject-page-listeners', source: 'click'
-      });
+      }));
     }
   }
 });
@@ -140,9 +140,9 @@ let observer = new MutationObserver(function (mutations) {
         clearTimeout(pageShowTimeout);
         pageShowTimeout = setTimeout(() => {
           logger.debug(new Date(), ": pageshow event might have taken place: ", attributeValue);
-          browser.runtime.sendMessage(browser.runtime.id, {
+          browser.runtime.sendMessage(browser.runtime.id, JSON.stringify({
             event: 'inject-page-listeners', source: 'mutationObserver'
-          });
+          }));
         }, 50);
       }
     }

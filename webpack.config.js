@@ -37,8 +37,7 @@ module.exports = (env, argv) => {
       tabIndicator: path.join(__dirname, "src", "tabIndicator.js"),
       jquery: path.join(__dirname, "src", "jquery.js"),
       inject: path.join(__dirname, "src", "inject.js"),
-      preview: path.join(__dirname, "src", "preview.js"),
-      eventlisteners: path.join(__dirname, "src", "eventlisteners.js")
+      preview: path.join(__dirname, "src", "preview.js")
     }
     outputDir = 'dist';
   // }
@@ -110,8 +109,11 @@ module.exports = (env, argv) => {
         from: "src/_locales",
         to: "./_locales",
       }, {
-        from: "src/listeners.js",
-        to: "./listeners.js",
+        from: "src/eventlisteners.js",
+        to: "scripts/eventlisteners.js",
+      }, {
+        from: "src/init.js",
+        to: "scripts/init.js",
       }]),
       new MergeJsonWebpackPlugin({
         "files": [
