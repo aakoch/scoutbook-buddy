@@ -1,7 +1,7 @@
-import browser from "../utils/extension";
-import storage from "../utils/storage";
-import logger from "../utils/logger";
-import "../utils/i18n";
+import browser from "../../utils/extension";
+import storage from "../../utils/storage";
+import logger from "../../utils/logger";
+import "../../utils/i18n";
 import $ from "jquery";
 import './styles.scss';
 

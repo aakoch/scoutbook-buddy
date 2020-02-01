@@ -32,9 +32,13 @@ module.exports = (env, argv) => {
   entry = {
     // content_pre: path.join(__dirname, "src", "content_pre.js"),
     // contentscript: path.join(__dirname, "src", "contentscript.js"),
-    options: path.join(__dirname, "src", "options", "index.js"),
-    help: path.join(__dirname, "src", "help", "index.js"),
-    popup: path.join(__dirname, "src", "popup", "index.js"),
+
+    // POC
+    // options: path.join(__dirname, "src", "options", "index.js"),
+    // help: path.join(__dirname, "src", "help", "index.js"),
+    // popup: path.join(__dirname, "src", "popup", "index.js"),
+    // POC - end
+
     background: path.join(__dirname, "src", "background.js"),
     tabIndicator: path.join(__dirname, "src", "tabIndicator.js"),
     // jquery: path.join(__dirname, "src", "jquery.js"),
@@ -108,21 +112,25 @@ module.exports = (env, argv) => {
       new CleanWebpackPlugin({
         cleanStaleWebpackAssets: false,
       }),
-      new HtmlWebpackPlugin({
-        template: path.join(__dirname, "src", "popup", "index.html"),
-        filename: "popup.html",
-        chunks: ["popup"]
-      }),
-      new HtmlWebpackPlugin({
-        template: path.join(__dirname, "src", "options", "index.html"),
-        filename: "options.html",
-        chunks: ["options"]
-      }),
-      new HtmlWebpackPlugin({
-        template: path.join(__dirname, "src", "help", "index.html"),
-        filename: "help.html",
-        chunks: ["help"]
-      }),
+
+      // POC 
+      // new HtmlWebpackPlugin({
+      //   template: path.join(__dirname, "src", "popup", "index.html"),
+      //   filename: "popup.html",
+      //   chunks: ["popup"]
+      // }),
+      // new HtmlWebpackPlugin({
+      //   template: path.join(__dirname, "src", "options", "index.html"),
+      //   filename: "options.html",
+      //   chunks: ["options"]
+      // }),
+      // new HtmlWebpackPlugin({
+      //   template: path.join(__dirname, "src", "help", "index.html"),
+      //   filename: "help.html",
+      //   chunks: ["help"]
+      // }),
+      // POC - end
+
       new CopyWebpackPlugin([{
         from: "src/icons",
         to: "./icons"

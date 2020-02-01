@@ -1,7 +1,7 @@
-import browser from "../utils/extension";
-import "../utils/i18n";
+import browser from "../../utils/extension";
+import "../../utils/i18n";
 import './styles.scss'; // to get webpack to handle this
-import logger from "../utils/logger";
+import logger from "../../utils/logger";
 
 let activeTab;
 
