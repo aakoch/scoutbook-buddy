@@ -14,6 +14,7 @@ function handleMessage(request, sender, sendResponse) {
   request =  JSON.parse(request);
   } catch (e) {
     console.error('Error:', e, request);
+    return;
   }
   if (request.event == 'pageshow') {
     // if (request.source !== 'mutationObserver') {
@@ -28,7 +29,6 @@ function handleMessage(request, sender, sendResponse) {
 
       runPageShowHandlers();
     }, 10);
-    // }
   } else if (request.action == 'save-message') {
     logger.info(new Date().toISOString(), ": background.js save-message mesage received. request=", request, ", sender=", sender);
     let message = {
