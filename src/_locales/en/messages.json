@@ -26,5 +26,13 @@
   "optionsLinkLabel": {
     "message": "Options",
     "description": "Options link label"
+  },
+  "selectAllAction": {
+    "message": "Select All",
+    "description": "Label on top of column of leaders, parents or scouts to select all"
+  },
+  "unselectAllAction": {
+    "message": "Unselect All",
+    "description": "Label on top of column of leaders, parents or scouts to unselect all"
   }
 }

@@ -1,6 +1,17 @@
-import browser from "./utils/extension";
-import $ from "jquery";
-import logger from "./utils/logger";
+import {default as browser} from './utils/extension.js';
+import "./jquery.js";
+var $ = jQuery;
+console.log($);
+// import logger from './utils/logger.js/index.js';
+
+const logger = { 
+debug: console.log,
+info: console.log
+}
+// import browser from "./utils/extension";
+// import logger from "./utils/logger";
+
+export function main() {
 
 // 'ui-btn-up-e' is misleading because the site uses the up button from the "e" template 
 // to signify it is "down" or selected.
@@ -11,8 +22,7 @@ const CHECKBOX_SELECTED_CLASS = 'ui-btn-up-e';
 function addFooterIndicator() {
   // TODO: move the style into a SASS file
   $("body", document)
-    .prepend("<div id='scoutbookbuddyindicator' style='font-family: \"Roboto\", sans-serif; font-weight: normal; font-size: 12px; position: fixed; bottom: 0; right: 5px; opacity: 30%; z-index: 1'>Scoutbook Buddy Activated</div>");
-
+    .prepend("<div id='scoutbookbuddyindicator' style='font-family: \"Roboto\", sans-serif; font-weight: normal; font-size: 12px; position: fixed; bottom: 0; right: 5px; opacity: 30%; z-index: 2'>Scoutbook Buddy Activated</div>");
 }
 addFooterIndicator();
 
@@ -55,6 +65,7 @@ function handleMessage(request, sender, sendResponse) {
     }, 600); // not sure the wait is needed anymore now that I have the MutationObserver
   } else {
     logger.info('Unrecognized request recieved in content script. request=', request);
+    return true;
   }
 }
 
@@ -76,9 +87,9 @@ $(document).on('click', '.selectAllLeaders,.selectAllParents,.selectAllScouts', 
 
   let allChecked = $(selector, document).length == 0; // zero unchecked means they are all checked
   if (allChecked) {
-    $selectAllLink.text('Unselect All');
+    $selectAllLink.text(browser.i18n.getMessage('unselectAllAction'));
   } else {
-    $selectAllLink.text('Select All');
+    $selectAllLink.text(browser.i18n.getMessage('selectAllAction'));
   }
 });
 
@@ -100,9 +111,9 @@ $(document).on('click', 'li.checkable', function (e) {
   const allChecked = $person.siblings('.checkable').filter('.' + CHECKBOX_UNSELECTED_CLASS).length == 0 &&
     $person.hasClass(CHECKBOX_SELECTED_CLASS);
   if (allChecked) {
-    $selectAllLink.text('Unselect All');
+    $selectAllLink.text(browser.i18n.getMessage('unselectAllAction'));
   } else {
-    $selectAllLink.text('Select All');
+    $selectAllLink.text(browser.i18n.getMessage('selectAllAction'));
   }
 });
 
@@ -160,13 +171,17 @@ browser.runtime.onMessage.addListener(handleMessage);
   logger.debug('contentscript.js window message received. Event=', e);
 });
 
-var port = chrome.runtime.connect({name: "knockknock"});
-port.postMessage({joke: "Knock knock"});
-port.onMessage.addListener(function(msg) {
-  if (msg.question == "Who's there?")
-    port.postMessage({answer: "Madame"});
-  else if (msg.question == "Madame who?")
-    port.postMessage({answer: "Madame... Bovary"});
-});
+// var port = chrome.runtime.connect({name: "knockknock"});
+// port.postMessage({joke: "Knock knock"});
+// port.onMessage.addListener(function(msg) {
+//   if (msg.question == "Who's there?")
+//     port.postMessage({answer: "Madame"});
+//   else if (msg.question == "Madame who?")
+//     port.postMessage({answer: "Madame... Bovary"});
+// });
 
 logger.debug('contentscript.js loaded');
+
+}
+
+jQuery.noConflict(true);

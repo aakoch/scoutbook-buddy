@@ -37,8 +37,7 @@
         "https://*.scoutbook.com/*"
       ],
       "js": [
-        "scripts/contentscript.js",
-        "listeners.js"
+        "scripts/content_pre.js"
       ],
       "run_at": "document_end",
       "all_frames": false
@@ -71,8 +70,10 @@
     "scripts/inject.js",
     "scripts/preview.js",
     "scripts/jquery.js",
-    "listeners.js",
-    "scripts/eventlisteners.js"
+    "scripts/eventlisteners.js",
+    "scripts/utils/logger.js",
+    "scripts/utils/extension.js",
+    "scripts/contentscript.js"
   ],
   "externally_connectable": {
     "matches": ["*://*.scoutbook.com/*"]

@@ -1,7 +1,5 @@
 !window.scoutbookbuddyinitialized && (function (window) {
 
-  console.clear();
-
   function passEventOn(event) {
     if (!!extensionId) {
       let slimmedEvent = {
@@ -29,8 +27,9 @@
     'focus', 'blur',
     'keyup', 'keydown', 'keypress', 'input',
     'scrollstart', 'scrollstop',
+    'message',
     // less common:
-    'vmousedown', 'focusin', 'selectstart', 'selectionchange', 'pointerup', 
+    'vmousedown', 'focusin', 'selectstart', 'selectionchange', 'pointerup', 'vclick',
     // some more jQuery we aren't interested in
     'listviewcreate', 'selectmenubeforecreate', 'updatelayout', 'focusout', 'vmousecancel', 'vmouseup', 'vmousedown'
   ];
@@ -46,9 +45,10 @@
     }
   }
 
+  let windowSkipEvents = skipEvents.concat(['click']); // click event should be caught before it reaches the window
   for (attr in window) {
     if (attr.indexOf('on') == 0) {
-      if (!skipEvents.includes(attr.substring(2))) {
+      if (!windowSkipEvents.includes(attr.substring(2))) {
         events.push(attr);
         window.addEventListener(attr.substring(2), function (event) {
           console.log("window event", event.type);
@@ -70,20 +70,15 @@
     }
   }
 
-  // if ((window | self).jQuery !== 'undefined') {
-  //   (window | self).jQuery.holdReady(true);
-
   function readystateHandler() {
       $(function ($) {
         for (attr in $.event.global) {
-          if (attr) {
-            if (!skipEvents.includes(attr)) {
-              events.push(attr);
-              $(document).on(attr, function (event) {
-                console.log("jquery event", event.type);
-                passEventOn(event);
-              });
-            }
+          if (!skipEvents.includes(attr)) {
+            events.push(attr);
+            $(document).on(attr, function (event) {
+              console.log("jquery event", event.type);
+              passEventOn(event);
+            });
           }
         }
         console.log('events registered:', events.join(', '));
@@ -92,10 +87,7 @@
   }
 
   document.addEventListener('readystatechange', readystateHandler);
-  // }
-  // else {
-  //   setTimeout(checkForJQuery, 1);
-  // }
+  
   window.scoutbookbuddyinitialized = true;
 
 })(window);

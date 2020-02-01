@@ -9,12 +9,18 @@ let injectedHeartbeatTimeout;
 let injectedCounter = 0;
 let injectedTimeout;
 
+
 function handleMessage(request, sender, sendResponse) {
   try {
-  request =  JSON.parse(request);
+    request = JSON.parse(request);
   } catch (e) {
-    console.error('Error:', e, request);
-    return;
+    if (request.msg) { // && request.msg.startsWith('{"hostx":"www.","text":"RestartSession","sensitive":"yes","url":"https://www.scoutbook.com/mobile/dashboard/messages/default.asp?UnitID')) {
+      // for messages from scoutbook site
+      handleMessage(request.msg, sender, sendResponse);
+    } else {
+      console.log("parse error", e, request);
+    }
+    return true;
   }
   if (request.event == 'pageshow') {
     // if (request.source !== 'mutationObserver') {
@@ -241,23 +247,23 @@ chrome.runtime.onRestartRequired.addListener(() => {
 
 // chrome.runtime.reload()
 
-chrome.runtime.onConnect.addListener(function (port) {
-  console.assert(port.name == "knockknock");
-  port.onMessage.addListener(function (msg) {
-    if (msg.joke == "Knock knock")
-      port.postMessage({
-        question: "Who's there?"
-      });
-    else if (msg.answer == "Madame")
-      port.postMessage({
-        question: "Madame who?"
-      });
-    else if (msg.answer == "Madame... Bovary")
-      port.postMessage({
-        question: "I don't get it."
-      });
-  });
-});
+// chrome.runtime.onConnect.addListener(function (port) {
+//   console.assert(port.name == "knockknock");
+//   port.onMessage.addListener(function (msg) {
+//     if (msg.joke == "Knock knock")
+//       port.postMessage({
+//         question: "Who's there?"
+//       });
+//     else if (msg.answer == "Madame")
+//       port.postMessage({
+//         question: "Madame who?"
+//       });
+//     else if (msg.answer == "Madame... Bovary")
+//       port.postMessage({
+//         question: "I don't get it."
+//       });
+//   });
+// });
 
 // var callback = function(details) {...};
 var filter = {
