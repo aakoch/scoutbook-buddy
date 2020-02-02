@@ -18,8 +18,7 @@
   "background": {
     "scripts": [
       "scripts/background.js",
-      "scripts/tabIndicator.js",
-      "scripts/messageStateBackground.js"
+      "scripts/tabIndicator.js"
     ]
   },
   "permissions": [
@@ -38,8 +37,7 @@
         "https://*.scoutbook.com/*"
       ],
       "js": [
-        "scripts/contentscript.js", 
-        "scripts/messageState.js"
+        "scripts/contentscript.js"
       ],
       "run_at": "document_end",
       "all_frames": false
@@ -75,8 +73,6 @@
     "scripts/eventlisteners.js",
     "scripts/utils/extension.js",
     "scripts/contentscript.js",
-    "scripts/messageState.js",
-    "scripts/messageStateBackground.js"
   ],
   "externally_connectable": {
     "matches": ["*://*.scoutbook.com/*"]

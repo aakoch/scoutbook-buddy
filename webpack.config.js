@@ -44,8 +44,6 @@ module.exports = (env, argv) => {
     eventlisteners: path.join(__dirname, "src", "eventlisteners.js"),
     inject: path.join(__dirname, "src", "inject.js"),
     preview: path.join(__dirname, "src", "preview.js"),
-    messageState: path.join(__dirname, "src", "messageState.js"),
-    messageStateBackground: path.join(__dirname, "src", "messageStateBackground.js"),
     // logger: path.join(__dirname, "src", "logger.js"),
     // extension: path.join(__dirname, "src", "utils", "extension.js"),
   }
