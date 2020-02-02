@@ -62,26 +62,10 @@ module.exports = (env, argv) => {
     devtool: 'inline-source-map',
     output: {
       filename: 'scripts/[name].js',
-      path: path.resolve(__dirname, outputDir),
-      globalObject: 'document'
+      path: path.resolve(__dirname, outputDir)
     },
     module: {
-      // loaders: [
-      //   {exclude: ['node_modules'], loader: 'babel', test: /\.jsx?$/},
-      //   {loader: 'style-loader!css-loader', test: /\.css$/},
-      //   {loader: 'url-loader', test: /\.gif$/},
-      //   {loader: 'file-loader', test: /\.(ttf|eot|svg)$/},
-      // ],module: 
-      // noParse: /contentscript/,
       rules: [
-        //   {
-        //   test: /utils\/extension\.js$/,
-        //   use: ['file-loader'],
-        // },
-        // {
-        //   test: /src\/util\/.*\.js$/,
-        //   use: ['script-loader'],
-        // },
         {
           test: /\.(png|svg|jpg|gif)$/,
           use: ['file-loader'],
@@ -99,10 +83,6 @@ module.exports = (env, argv) => {
           use: 'mocha-loader',
           exclude: /node_modules/,
         },
-        // {
-        //   test: require.resolve('./src/contentscript.js'),
-        //   use: 'imports-loader?this=>document',
-        // },
       ],
     },
     // stats: {
@@ -146,21 +126,6 @@ module.exports = (env, argv) => {
         from: "src/_locales",
         to: "./_locales",
       }, {
-      //   from: "src/eventlisteners.js",
-      //   to: "scripts/eventlisteners.js",
-      // }, {
-      //   from: "src/contentscript.js",
-      //   to: "scripts/contentscript.js",
-      // }, {
-      //   from: "node_modules/jquery/dist/jquery.min.js",
-      //   to: "scripts/jquery.js",
-      // }, {
-      //   from: "src/utils/extension.js",
-      //   to: "scripts/utils/extension.js",
-      // }, {
-      //   from: "src/utils/logger.js",
-      //   to: "scripts/utils/logger.js",
-      // }, {
         from: "src/init.js",
         to: "scripts/init.js",
       }, {
@@ -184,20 +149,6 @@ module.exports = (env, argv) => {
       new webpack.EnvironmentPlugin({
         NODE_ENV: 'development', // use 'development' unless process.env.NODE_ENV is defined
       }),
-      // new webpack.ProvidePlugin({
-      //   $: 'jquery',
-      // }),
-      // new ExtensionReloader({
-      //   // manifest: path.resolve(__dirname, "src", "manifest.json"),
-      //   entries: {
-      //     background: ['background', 'tabIndicator'],
-      //     contentScript: 'contentscript',
-      //     extensionPage: ['help', 'options', 'popup'],
-      //   }
-      // }),
-      // new CopyWebpackPlugin([{
-      //   from: "./src/manifest.json"
-      // }, ]),
     ],
     node: {
       fs: 'empty'
