@@ -1,12 +1,12 @@
 import document from 'document';
-import jQuery from 'jquery';
 import browser from './utils/extension';
-var $ = jQuery;
 
 import Logger from './utils/logger';
 const logger = Logger.create('eventlisteners');
 
 !window.scoutbookbuddyinitialized && (function (window) {
+
+  var $ = window.$ || window.jQuery;
 
   // Logger.createDefaultHandler({
   //   formatter: function(messages, context) {
@@ -62,7 +62,7 @@ const logger = Logger.create('eventlisteners');
     }
   }
 
-  let windowSkipEvents = skipEvents.concat(['click']); // click event should be caught before it reaches the window
+  let windowSkipEvents = skipEvents.concat(['click', 'dblclick']); // click event should be caught before it reaches the window
   for (attr in window) {
     if (attr.indexOf('on') == 0) {
       if (!windowSkipEvents.includes(attr.substring(2))) {
@@ -88,6 +88,7 @@ const logger = Logger.create('eventlisteners');
   }
 
   function readystateHandler() {
+    if (!!$) {
       $(function ($) {
         for (attr in $.event.global) {
           if (!skipEvents.includes(attr)) {
@@ -101,6 +102,10 @@ const logger = Logger.create('eventlisteners');
         console.log('events registered:', events.join(', '));
       });
       document.removeEventListener('readystatechange', readystateHandler);
+    }
+    else {
+      setTimeout(readystateHandler, 100);
+    }
   }
 
   document.addEventListener('readystatechange', readystateHandler);

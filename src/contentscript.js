@@ -3,8 +3,20 @@ import jQuery from 'jquery';
 import browser from './utils/extension';
 var $ = jQuery;
 
-import Logger from './utils/logger';
-const logger = Logger.create('contentscript');
+// import Logger from './utils/logger';
+// const logger = Logger.create('contentscript');
+
+// var port = chrome.runtime.connect({name: "contentscript"});
+
+// port.onMessage.addListener(function(msg) {
+//   console.log("port on message", msg);
+// });
+
+// port.postMessage(JSON.stringify({msg: 'anybody listening?'}));
+
+// port.onDisconnect.addListener(function(msg) {
+//   console.log('Port closed');
+// });
 
 // 'ui-btn-up-e' is misleading because the site uses the up button from the "e" template 
 // to signify it is "down" or selected.
@@ -29,8 +41,22 @@ const getCount = () => {
 let indicatorTimeout;
 
 function handleMessage(request, sender, sendResponse) {
-  logger.info("contentscript.js handleMessage(): request=", request, ", sender=", sender);
 
+  if (typeof request === 'object')
+    return true;
+
+  try {
+    request = JSON.parse(request);
+  } catch (e) {
+    if (request.msg) { // && request.msg.startsWith('{"hostx":"www.","text":"RestartSession","sensitive":"yes","url":"https://www.scoutbook.com/mobile/dashboard/messages/default.asp?UnitID')) {
+      // for messages from scoutbook site
+      portHandler(request.msg, sender, sendResponse);
+    } else {
+      logger.warn("parse error", e, request);
+    }
+    return true;
+  }
+  
   // TODO: can we put the actions into a map with the key as the action and the function as the value?
   if (request.action === 'process-page') {
     sendResponse(gatherPageInformation());
@@ -42,14 +68,14 @@ function handleMessage(request, sender, sendResponse) {
     clearTimeout(indicatorTimeout);
     indicatorTimeout = setTimeout(function () {
       if (!$('#scoutbookbuddyindicator', document).length) {
-        logger.info("scoutbook buddy indicator not found");
+        console.log("scoutbook buddy indicator not found");
         addFooterIndicator();
       } else {
-        logger.info(new Date(), "scoutbook buddy indicator found");
+        console.log(new Date(), "scoutbook buddy indicator found");
       }
     }, 600); // not sure the wait is needed anymore now that I have the MutationObserver
   } else if (request.action === 'heartbeat') {
-    logger.info('heartbeat received');
+    console.log('heartbeat received');
     // setTimeout(sendResponse, 1000);
   } else if (request.action === 'restore-message') {
     setTimeout(function () {
@@ -57,7 +83,7 @@ function handleMessage(request, sender, sendResponse) {
       $('#body', document).val(request.body);
     }, 600); // not sure the wait is needed anymore now that I have the MutationObserver
   } else {
-    logger.info('Unrecognized request recieved in content script. request=', request);
+    console.log('Unrecognized request recieved in content script. request=', request);
     return true;
   }
 }
@@ -112,7 +138,7 @@ $(document).on('click', 'li.checkable', function (e) {
 
 $(document).on('click', '.ui-btn,#buttonSubmit', function (e) {
   if (document.location.pathname.includes('messages/default.asp')) {
-    // logger.debug('contentscript.js radio or submit button was clicked - should we save the email?');
+    // console.log('contentscript.js radio or submit button was clicked - should we save the email?');
     // TODO: 'keepContentID' is part of sbfa so this will only work if it is there
     if (document.getElementById('keepContentID') && document.getElementById('keepContentID').checked) {
       const subject = $('#subject', document).val();
@@ -143,9 +169,9 @@ let observer = new MutationObserver(function (mutations) {
       } else {
         clearTimeout(pageShowTimeout);
         pageShowTimeout = setTimeout(() => {
-          logger.debug(new Date(), ": pageshow event might have taken place: ", attributeValue);
+          console.log(new Date(), ": pageshow event might have taken place: ", attributeValue);
           browser.runtime.sendMessage(browser.runtime.id, JSON.stringify({
-            event: 'inject-page-listeners', source: 'mutationObserver'
+            event: 'pageshow', source: 'mutationObserver'
           }));
         }, 50);
       }
@@ -162,7 +188,7 @@ browser.runtime.onMessage.addListener(handleMessage);
 // not sure I need this anymore now that I have the MutationObserver
 // actually, this won't work because window isn't available to contentscripts
 // (window || self).addEventListener('message', function (e) {
-//   logger.debug('contentscript.js window message received. Event=', e);
+//   console.log('contentscript.js window message received. Event=', e);
 // });
 
 // var port = chrome.runtime.connect({name: "knockknock"});
@@ -174,7 +200,7 @@ browser.runtime.onMessage.addListener(handleMessage);
 //     port.postMessage({answer: "Madame... Bovary"});
 // });
 
-logger.debug('contentscript.js loaded');
+console.log('contentscript.js loaded');
 
 // }
 
