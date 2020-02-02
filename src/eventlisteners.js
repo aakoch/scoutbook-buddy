@@ -1,4 +1,20 @@
+import document from 'document';
+import jQuery from 'jquery';
+import browser from './utils/extension';
+var $ = jQuery;
+
+import Logger from './utils/logger';
+const logger = Logger.create('eventlisteners');
+
 !window.scoutbookbuddyinitialized && (function (window) {
+
+  // Logger.createDefaultHandler({
+  //   formatter: function(messages, context) {
+  //     // prefix each log message with a timestamp.
+  //     messages.unshift(new Date().toUTCString())
+  //   }
+  // });
+
 
   function passEventOn(event) {
     if (!!extensionId) {
@@ -9,12 +25,12 @@
           'id': event.target.id,
           'classList': event.target.classList
         },
-        'type': event.type
+        'event': event.type
       };
-      chrome.runtime.sendMessage(extensionId, JSON.stringify(slimmedEvent));
+      browser.runtime.sendMessage(extensionId, JSON.stringify(slimmedEvent));
     }
     else {
-      console.log('dropping event', event.type);
+      logger.info('dropping event', event.type);
     }
   }
 
@@ -35,6 +51,7 @@
   ];
 
   var extensionId = document.getElementById('scoutbookbuddyextensionid').innerText;
+  var attr;
 
   if (!extensionId) {
     let retry = () => {
@@ -51,7 +68,7 @@
       if (!windowSkipEvents.includes(attr.substring(2))) {
         events.push(attr);
         window.addEventListener(attr.substring(2), function (event) {
-          console.log("window event", event.type);
+          logger.debug("window event", event.type);
           passEventOn(event);
         });
       }
@@ -63,7 +80,7 @@
       if (!skipEvents.includes(attr.substring(2))) {
         events.push(attr);
         document.addEventListener(attr.substring(2), function (event) {
-          console.log("document event", event.type);
+          logger.debug("document event", event.type);
           passEventOn(event);
         });
       }
@@ -76,7 +93,7 @@
           if (!skipEvents.includes(attr)) {
             events.push(attr);
             $(document).on(attr, function (event) {
-              console.log("jquery event", event.type);
+              logger.info("jquery event", event.type);
               passEventOn(event);
             });
           }

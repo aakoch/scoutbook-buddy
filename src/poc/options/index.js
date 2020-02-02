@@ -1,6 +1,6 @@
 import browser from "../../utils/extension";
 import storage from "../../utils/storage";
-import logger from "../../utils/logger";
+import logger from "js-logger";
 import "../../utils/i18n";
 import $ from "jquery";
 import './styles.scss';

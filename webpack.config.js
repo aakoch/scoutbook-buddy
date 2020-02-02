@@ -31,7 +31,7 @@ module.exports = (env, argv) => {
   // } else {
   entry = {
     // content_pre: path.join(__dirname, "src", "content_pre.js"),
-    // contentscript: path.join(__dirname, "src", "contentscript.js"),
+    contentscript: path.join(__dirname, "src", "contentscript.js"),
 
     // POC
     // options: path.join(__dirname, "src", "options", "index.js"),
@@ -41,9 +41,11 @@ module.exports = (env, argv) => {
 
     background: path.join(__dirname, "src", "background.js"),
     tabIndicator: path.join(__dirname, "src", "tabIndicator.js"),
-    // jquery: path.join(__dirname, "src", "jquery.js"),
+    eventlisteners: path.join(__dirname, "src", "eventlisteners.js"),
     inject: path.join(__dirname, "src", "inject.js"),
     preview: path.join(__dirname, "src", "preview.js"),
+    messageState: path.join(__dirname, "src", "messageState.js"),
+    messageStateBackground: path.join(__dirname, "src", "messageStateBackground.js"),
     // logger: path.join(__dirname, "src", "logger.js"),
     // extension: path.join(__dirname, "src", "utils", "extension.js"),
   }
@@ -51,11 +53,17 @@ module.exports = (env, argv) => {
   // }
 
   return merge({}, {
+    externals: {
+      // jquery: 'jQuery',
+      document: 'document',
+      window: 'window'
+    },
     entry: entry,
     devtool: 'inline-source-map',
     output: {
       filename: 'scripts/[name].js',
       path: path.resolve(__dirname, outputDir),
+      globalObject: 'document'
     },
     module: {
       // loaders: [
@@ -138,29 +146,25 @@ module.exports = (env, argv) => {
         from: "src/_locales",
         to: "./_locales",
       }, {
-        from: "src/eventlisteners.js",
-        to: "scripts/eventlisteners.js",
-      }, {
-        from: "src/content_pre.js",
-        to: "scripts/content_pre.js",
-      }, {
-        from: "src/contentscript.js",
-        to: "scripts/contentscript.js",
-      }, {
-        from: "node_modules/jquery/dist/jquery.min.js",
-        to: "scripts/jquery.js",
-      }, {
-        from: "src/utils/extension.js",
-        to: "scripts/utils/extension.js",
-      }, {
-        from: "src/utils/logger.js",
-        to: "scripts/utils/logger.js",
-      }, {
+      //   from: "src/eventlisteners.js",
+      //   to: "scripts/eventlisteners.js",
+      // }, {
+      //   from: "src/contentscript.js",
+      //   to: "scripts/contentscript.js",
+      // }, {
+      //   from: "node_modules/jquery/dist/jquery.min.js",
+      //   to: "scripts/jquery.js",
+      // }, {
+      //   from: "src/utils/extension.js",
+      //   to: "scripts/utils/extension.js",
+      // }, {
+      //   from: "src/utils/logger.js",
+      //   to: "scripts/utils/logger.js",
+      // }, {
         from: "src/init.js",
         to: "scripts/init.js",
       }, {
         from: "src/featureassistant/**/*",
-        to: "",
         flatten: true
       }]),
       new MergeJsonWebpackPlugin({
@@ -173,7 +177,6 @@ module.exports = (env, argv) => {
         "output": {
           "fileName": "manifest.json"
         },
-        "debug": true
       }),
       new ZipPlugin({
         filename: 'scoutbook-buddy.zip',

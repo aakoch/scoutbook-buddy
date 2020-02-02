@@ -1,17 +1,10 @@
-import {default as browser} from './utils/extension.js';
-import "./jquery.js";
+import document from 'document';
+import jQuery from 'jquery';
+import browser from './utils/extension';
 var $ = jQuery;
-console.log($);
-// import logger from './utils/logger.js/index.js';
 
-const logger = { 
-debug: console.log,
-info: console.log
-}
-// import browser from "./utils/extension";
-// import logger from "./utils/logger";
-
-export function main() {
+import Logger from './utils/logger';
+const logger = Logger.create('contentscript');
 
 // 'ui-btn-up-e' is misleading because the site uses the up button from the "e" template 
 // to signify it is "down" or selected.
@@ -167,9 +160,10 @@ observer.observe($("body", document)[0], {
 browser.runtime.onMessage.addListener(handleMessage);
 
 // not sure I need this anymore now that I have the MutationObserver
-(window || self).addEventListener('message', function (e) {
-  logger.debug('contentscript.js window message received. Event=', e);
-});
+// actually, this won't work because window isn't available to contentscripts
+// (window || self).addEventListener('message', function (e) {
+//   logger.debug('contentscript.js window message received. Event=', e);
+// });
 
 // var port = chrome.runtime.connect({name: "knockknock"});
 // port.postMessage({joke: "Knock knock"});
@@ -182,6 +176,6 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 logger.debug('contentscript.js loaded');
 
-}
+// }
 
-jQuery.noConflict(true);
+//jQuery.noConflict(true);

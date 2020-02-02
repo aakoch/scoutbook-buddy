@@ -1,5 +1,6 @@
 import bbcode from 'bbcode';
 import './styles/common.scss'; // to get webpack to handle this
+import document from 'document';
 
 var mySpecialButtonWasPressed = false;
 
@@ -10,7 +11,7 @@ var $btna = $('<button class="ui-btn ui-btn-a buddy" data-role="button" data-the
 // var $btnd = $('<button class="ui-btn ui-btn-d" data-role="button" data-theme="d">Preview d</button>');
 // var $btne = $('<button class="ui-btn ui-btn-e" data-role="button" data-theme="e">Preview e</button>');
 
-var $div = $('#messageForm').append('<div></div>');
+var $div = $('#messageForm', document).append('<div></div>');
 $div.append($btna); //.append($btnb).append($btnc).append($btnd).append($btne);
 
 $btna.button({
@@ -50,31 +51,33 @@ $btna
     }, 10);
   });
 
-$('#messageForm').submit((e) => {
+
+$('#messageForm', document).submit((e) => {
   if (mySpecialButtonWasPressed) {
-    if ($('input[type=radio][name=MessageType] + .ui-radio-on').attr('title') === 'Send text message') {
+    if ($('input[type=radio][name=MessageType] + .ui-radio-on', document).attr('title') === 'Send text message') {
       displayPreview('<pre>' + $('#body').val() + '</pre>');
     } else {
-      bbcode.parse($('#body').val(), displayPreview);
+      bbcode.parse($('#body').val() || '[i]No message to preview[/i]', displayPreview);
     }
   }
   return !mySpecialButtonWasPressed;
 });
 
 function mouseDown(e) {
-  var $target = $(e.target);
+  var $target = $(e.target, document);
   var theme = $target.data('theme');
   $target.closest('div').removeClass('ui-btn-hover-' + theme).addClass('ui-btn-down-' + theme);
 }
 
 function mouseLeave(e) {
-  var $target = $(e.target);
+  var $target = $(e.target),
+    document;
   var theme = $target.data('theme');
   $target.closest('div').removeClass('ui-btn-hover-' + theme);
 }
 
 function mouseEnter(e) {
-  var $target = $(e.target);
+  var $target = $(e.target, document);
   var theme = $target.data('theme');
   $target.closest('div').addClass('ui-btn-hover-' + theme);
 }
@@ -82,9 +85,9 @@ function mouseEnter(e) {
 function displayPreview(content) {
   var closeBtn = $('<button class="ui-btn ui-btn-a buddy" data-role="button" data-theme="a" data-inline="true">Close</button>');
   $('<div id="overlay" style="width:' + window.innerWidth + 'px;height:' + window.innerHeight + 'px;z-index:1001;position:fixed;top:0;left:0;background-color:white;color:black;padding:30px"><div>' + content + '</div></div>')
-    .appendTo("body")
+    .appendTo("body", document)
     .click((e) => {
-      $('#overlay').remove();
+      $('#overlay', document).remove();
     })
     .append('<div id="btnContainer"></div>');
 
@@ -98,3 +101,6 @@ function displayPreview(content) {
     .mouseleave(mouseLeave)
     .mousedown(mouseDown);
 }
+
+// hides FA button
+$("#buttonPreviewEmail").parent().hide();

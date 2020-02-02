@@ -1,5 +1,7 @@
 import browser from "./utils/extension";
-import logger from './utils/logger';
+
+import Logger from './utils/logger';
+const logger = Logger.create('background');
 
 let pageShowHandlers = [];
 let pageshowTimeout;
@@ -227,6 +229,7 @@ chrome.runtime.onStartup.addListener((event) => {
 
 chrome.runtime.onInstalled.addListener(() => {
   logger.info("event: onInstalled", event);
+  //
 
   chrome.tabs.query({
     url: '*://*.scoutbook.com/*'
