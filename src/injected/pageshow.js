@@ -1,5 +1,6 @@
-
-
+/**
+ * This is injected onto the page so we get jQuery events, specifically we need 'pageshow'
+ */
 $(document).on('pageshow.buddy', function (event) {
   let slimmedEvent = {
     target: {
