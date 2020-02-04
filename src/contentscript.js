@@ -3,6 +3,37 @@ import jQuery from 'jquery';
 import browser from './utils/extension';
 var $ = jQuery;
 
+function inject(filename) {
+  var injectUrl = browser.extension.getURL('scripts/' + filename);
+
+  var s = document.createElement('span');
+  s.id = 'scoutbookbuddyextensionid';
+  s.style = 'display:none';
+  s.innerText = chrome.runtime.id;
+  (document.head || document.documentElement).appendChild(s);
+
+  var s = document.createElement('script');
+  s.src = injectUrl;
+  s.onload = function() {
+    this.remove();
+  };
+  (document.head || document.documentElement).appendChild(s);
+
+  // browser.tabs.executeScript(tabs[0].id, {
+  //   code: actualCode,
+  //   runAt: 'document_end'
+  // },
+  // function () {
+  //   if (browser.runtime.lastError) {
+  //     console.log('Error: ' + browser.runtime.lastError.message + '. Perhaps you forgot to add it to the manifest?');
+  //   } else {
+  //     console.log('done making call in background', r);
+  //   }
+  // });
+}
+
+inject('pageshow.js');
+
 // import Logger from './utils/logger';
 // const logger = Logger.create('contentscript');
 
@@ -56,7 +87,7 @@ function handleMessage(request, sender, sendResponse) {
     }
     return true;
   }
-  
+
   // TODO: can we put the actions into a map with the key as the action and the function as the value?
   if (request.action === 'process-page') {
     sendResponse(gatherPageInformation());
@@ -150,7 +181,8 @@ $(document).on('click', '.ui-btn,#buttonSubmit', function (e) {
       };
       browser.runtime.sendMessage(browser.runtime.id, JSON.stringify(request));
       browser.runtime.sendMessage(browser.runtime.id, JSON.stringify({
-        event: 'inject-page-listeners', source: 'click'
+        event: 'inject-page-listeners',
+        source: 'click'
       }));
     }
   }
@@ -158,28 +190,32 @@ $(document).on('click', '.ui-btn,#buttonSubmit', function (e) {
 
 // *****************************************************************************
 // Need to put this pageshow code into another file and maybe add a custom event
-let pageShowTimeout;
-
 let observer = new MutationObserver(function (mutations) {
-  mutations.forEach(function (mutation) {
-    if (mutation.attributeName === "class") {
+  mutations
+    .filter(mutation => mutation.attributeName === "class")
+    .forEach(function (mutation) {
       let attributeValue = $(mutation.target).prop(mutation.attributeName);
       if (attributeValue.includes('ui-mobile-viewport-transitioning')) {
         // don't do anything
       } else {
-        clearTimeout(pageShowTimeout);
-        pageShowTimeout = setTimeout(() => {
-          console.log(new Date(), ": pageshow event might have taken place: ", attributeValue);
-          browser.runtime.sendMessage(browser.runtime.id, JSON.stringify({
-            event: 'pageshow', source: 'mutationObserver'
-          }));
-        }, 50);
+        console.log(new Date(), "pageshow event might have taken place", attributeValue,
+          mutation.oldValue);
+        browser.runtime.sendMessage(browser.runtime.id, JSON.stringify({
+          event: 'pageshow',
+          source: 'mutationObserver',
+          pageId: $('.ui-page-active', document).attr('id'),
+          url: document.location.href
+        }));
       }
-    }
   });
 });
 observer.observe($("body", document)[0], {
-  attributes: true
+  attributes: true,
+  attributeOldValue: true
+});
+observer.observe($(document)[0], {
+  attributes: true,
+  attributeOldValue: true
 });
 // *****************************************************************************
 
@@ -187,9 +223,19 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 // not sure I need this anymore now that I have the MutationObserver
 // actually, this won't work because window isn't available to contentscripts
-// (window || self).addEventListener('message', function (e) {
-//   console.log('contentscript.js window message received. Event=', e);
-// });
+(window || self).addEventListener('message', function (e) {
+  console.log('contentscript.js window message received. Event=', e);
+
+  if (e.event == 'pageshow') {
+    browser.runtime.sendMessage(browser.runtime.id, JSON.stringify({
+      event: 'pageshow',
+      pageId: $('.ui-page-active', document).attr('id'),
+      url: document.location.href,
+      source: 'contentscript'
+    }));
+  }
+
+});
 
 // var port = chrome.runtime.connect({name: "knockknock"});
 // port.postMessage({joke: "Knock knock"});
