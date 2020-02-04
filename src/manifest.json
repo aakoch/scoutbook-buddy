@@ -72,7 +72,7 @@
     "scripts/jquery.js",
     "scripts/eventlisteners.js",
     "scripts/utils/extension.js",
-    "scripts/contentscript.js",
+    "scripts/contentscript.js"
   ],
   "externally_connectable": {
     "matches": ["*://*.scoutbook.com/*"]
