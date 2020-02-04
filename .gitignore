@@ -107,3 +107,4 @@ test-dist
 .DS_Store
 dist.pem
 dist.crx
+build/
