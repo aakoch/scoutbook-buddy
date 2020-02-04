@@ -67,6 +67,7 @@
     "default_popup": "popup.html"
   },
   "web_accessible_resources": [
+    "scripts/pageshow.js",
     "scripts/inject.js",
     "scripts/preview.js",
     "scripts/jquery.js",
