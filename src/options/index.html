@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="optionsPageTitle">Scoutbook Buddy Options</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+
+<body>
+
+  <header>
+    <h1 data-i18n="optionsPageTitle">Scoutbook Buddy Options</h1>
+  </header>
+
+  <div class="center-container">
+    <div id="flash" class="center"></div>
+  </div>
+
+  <section id="main">
+    <form>
+      <div class="option">
+        <input type="checkbox" id="refreshOnLogout"> <label for="refreshOnLogout" data-i18n="refreshOnLogoutLabel">Refresh when session ends</label>
+        <div data-i18n="refreshOnLogoutDesc">If your session times out, do you want to refresh the page?</div>
+      </div>
+      <div class="option">
+        <input type="checkbox" id="useSBPreview"> <label for="useSBPreview" data-i18n="useSBPreviewLabel">Use Scoutbook Buddy's Preview Functionality</label>
+        <div data-i18n="useSBPreviewDesc">Similar functionality, but Scoutbook Buddy's doesn't make a trip to the server so it's a bit faster.</div>
+      </div>
+    </form>
+  </section>
+
+  <section>
+    <div class="centered container">
+      <button id="close-btn" data-i18n="closeButtonLabel">Close</button>
+    </div>
+  </section>
+
+  <footer>&copy; 2020 <span data-i18n="extensionName">Scoutbook Buddy</span></footer>
+</body>
+
+</html>

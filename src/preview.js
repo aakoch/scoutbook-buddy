@@ -1,6 +1,11 @@
 import bbcode from 'bbcode';
 import './styles/common.scss'; // to get webpack to handle this
 import document from 'document';
+console.log('document', document);
+import window from 'window';
+var $ = window.$;
+
+console.count('preview script started');
 
 var mySpecialButtonWasPressed = false;
 
@@ -83,12 +88,33 @@ function mouseEnter(e) {
 }
 
 function displayPreview(content) {
+  var overlayName = 'buddy-overlay';
   var closeBtn = $('<button class="ui-btn ui-btn-a buddy" data-role="button" data-theme="a" data-inline="true">Close</button>');
-  $('<div id="overlay" style="width:' + window.innerWidth + 'px;height:' + window.innerHeight + 'px;z-index:1001;position:fixed;top:0;left:0;background-color:white;color:black;padding:30px"><div>' + content + '</div></div>')
+  var style = `
+    #${overlayName} {
+      width: ${window.innerWidth - 40}px;
+      height: ${window.innerHeight - 40}px;
+      z-index:1001;
+      position:fixed;
+      top: 20px;
+      left: 20px;
+
+      background-color: white;
+      color: black;
+      padding: 30px;
+      width: 91%; 
+      z-index: 1001; 
+      opacity: 0.9; 
+      border: 2px solid black;
+    }
+  `;
+
+  var s = document.createElement('style');
+  s.innerText = style;
+  (document.head || document.documentElement).appendChild(s);
+
+  $(`<div id='${overlayName}'><div>${content}</div></div>`)
     .appendTo("body", document)
-    .click((e) => {
-      $('#overlay', document).remove();
-    })
     .append('<div id="btnContainer"></div>');
 
   $('#btnContainer').append(closeBtn);
@@ -99,7 +125,12 @@ function displayPreview(content) {
     })
     .mouseenter(mouseEnter)
     .mouseleave(mouseLeave)
-    .mousedown(mouseDown);
+    .mousedown(mouseDown)
+    .click((e) => {
+      $(`#${overlayName}`, document).fadeOut((e) => {
+        $(`#${overlayName}`, document).remove()
+      });
+    });
 }
 
 // hides FA button

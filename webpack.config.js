@@ -9,7 +9,7 @@ const ZipPlugin = require('zip-webpack-plugin');
 const merge = require('webpack-merge');
 // couldn't get this to work: const ExtensionReloader = require('webpack-extension-reloader');
 //const entryGlob = require('webpack-glob-entry');
-//const fs = require('fs');
+const fs = require('fs');
 
 module.exports = (env, argv) => {
   !env || console.log("environment variables: ", env);
@@ -30,15 +30,10 @@ module.exports = (env, argv) => {
   //   outputDir = 'test-dist';
   // } else {
   entry = {
-    // content_pre: path.join(__dirname, "src", "content_pre.js"),
     contentscript: path.join(__dirname, "src", "contentscript.js"),
-
-    // POC
-    // options: path.join(__dirname, "src", "options", "index.js"),
-    // help: path.join(__dirname, "src", "help", "index.js"),
-    // popup: path.join(__dirname, "src", "popup", "index.js"),
-    // POC - end
-
+    options: path.join(__dirname, "src", "options", "index.js"),
+    help: path.join(__dirname, "src", "help", "index.js"),
+    popup: path.join(__dirname, "src", "popup", "index.js"),
     background: path.join(__dirname, "src", "background.js"),
     tabIndicator: path.join(__dirname, "src", "tabIndicator.js"),
     eventlisteners: path.join(__dirname, "src", "eventlisteners.js"),
@@ -48,7 +43,6 @@ module.exports = (env, argv) => {
     // extension: path.join(__dirname, "src", "utils", "extension.js"),
   }
   outputDir = 'dist';
-  // }
 
   return merge({}, {
     externals: {
@@ -99,23 +93,21 @@ module.exports = (env, argv) => {
         cleanStaleWebpackAssets: false,
       }),
 
-      // POC 
-      // new HtmlWebpackPlugin({
-      //   template: path.join(__dirname, "src", "popup", "index.html"),
-      //   filename: "popup.html",
-      //   chunks: ["popup"]
-      // }),
-      // new HtmlWebpackPlugin({
-      //   template: path.join(__dirname, "src", "options", "index.html"),
-      //   filename: "options.html",
-      //   chunks: ["options"]
-      // }),
-      // new HtmlWebpackPlugin({
-      //   template: path.join(__dirname, "src", "help", "index.html"),
-      //   filename: "help.html",
-      //   chunks: ["help"]
-      // }),
-      // POC - end
+      new HtmlWebpackPlugin({
+        template: path.join(__dirname, "src", "popup", "index.html"),
+        filename: "popup.html",
+        chunks: ["popup"]
+      }),
+      new HtmlWebpackPlugin({
+        template: path.join(__dirname, "src", "options", "index.html"),
+        filename: "options.html",
+        chunks: ["options"]
+      }),
+      new HtmlWebpackPlugin({
+        template: path.join(__dirname, "src", "help", "index.html"),
+        filename: "help.html",
+        chunks: ["help"]
+      }),
 
       new CopyWebpackPlugin([{
         from: "src/icons",
@@ -127,14 +119,13 @@ module.exports = (env, argv) => {
         from: "src/init.js",
         to: "scripts/init.js",
       }, {
-        from: "src/featureassistant/**/*",
+        from: "src/injected/*.js",
+        to: "scripts/",
         flatten: true
       }]),
       new MergeJsonWebpackPlugin({
         "files": [
           path.join("src", "manifest.json"),
-          path.join("src", "featureassistant", "manifest.json"),
-          //path.join("src", "manifest." + (process.env.NODE_ENV || "development")  + ".json")
           path.join("src", "manifest.development.json")
         ],
         "output": {

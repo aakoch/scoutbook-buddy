@@ -1,0 +1,45 @@
+@import "../styles/common";
+
+body {
+  overflow-y: hidden;
+}
+
+#flash {
+  margin: 10px auto;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  background-color: #4bdc30;
+  padding: 1em;
+  border-radius: 1em;
+  width: 200px;
+  display: none;
+}
+
+@media screen and (max-width: 401px) {
+  h1 {
+    font-size: 1.2em;
+  }
+  #flash {
+    width: 95%;
+  }
+}
+
+section#main {
+  padding: 1em;
+}
+
+.option {
+  padding: 1em;
+  div {
+    margin: 1em 0 0 1em;
+  }
+  input {
+    vertical-align: text-top;
+  }
+  label {
+    font-size: 1.2em;
+  }
+}

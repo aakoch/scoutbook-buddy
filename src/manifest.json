@@ -22,6 +22,7 @@
     ]
   },
   "permissions": [
+    "notifications",
     "tabs",
     "storage",
     "webRequest",

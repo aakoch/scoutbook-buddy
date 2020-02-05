@@ -26,7 +26,7 @@ function sendHeartbeats(port) {
     }
   });
 }
-  
+
 
 chrome.runtime.onConnect.addListener(function (port) {
   if (port.name === 'contentscript') {
@@ -37,14 +37,14 @@ chrome.runtime.onConnect.addListener(function (port) {
     });
 
     var tenSecondInterval;
+
     function startIntervalMessages() {
       tenSecondInterval = setInterval(function () {
         sendHeartbeats(port);
       }, 10000);
     }
     startIntervalMessages();
-  }
-  else if (port.name === 'inject') {
+  } else if (port.name === 'inject') {
     port.onMessage.addListener(portHandler);
 
     port.onDisconnect.addListener(function (msg) {
@@ -87,19 +87,25 @@ function handleMessage(request, sender, sendResponse) {
     }
     return true;
   }
-  if (request.event == 'pageshow') {
-    // if (request.source !== 'mutationObserver') {
-    clearTimeout(pageshowTimeout);
-    pageshowTimeout = setTimeout(() => {
-      console.log(new Date().toISOString() + ": background.js mesage received. request=", request, ", sender=", sender);
-      sendAction('add-footer-indicator');
+  if (request.event === 'pageshow') {
+    // console.count('pageshow event received');
+    if (request.source === 'mutationObserver') {
+      // console.log('ignoring pageshow event from ' + request.source);
+    } else if (!!request.pageId) {
+      oncePerPage(request, () => {
+        // console.count('inside once per page');
+        // console.log(new Date().toISOString() + ": background.js pageshow mesage from mutationObserver. request=", request, ", sender=", sender);
+        sendAction('add-footer-indicator');
 
-      if (sender.url.includes('messages/default.asp')) {
-        injectPreviewButton();
-      }
+        if (sender.url.includes('messages/default.asp') || request.url.includes('messages/default.asp')) {
+          injectPreviewButton();
+        }
 
-      runPageShowHandlers();
-    }, 10);
+        runPageShowHandlers();
+      });
+    } else {
+      console.log('pageshow event from ' + request.sender);
+    }
   } else if (request.action == 'save-message') {
     console.log(": background.js save-message mesage received. request=", request, ", sender=", sender);
     let message = {
@@ -124,18 +130,21 @@ function handleMessage(request, sender, sendResponse) {
       inject(true);
     }, 2000);
   } else {
-    console.log("background.js unknown mesage received. request=", request, ", sender=", sender);
+    // console.log("background.js unknown mesage received. request=", request, ", sender=", sender);
+    return true;
   }
 }
 
-function injectPreviewButton() {
-  console.log("entering injectPreviewButton");
+// to inject on the page itself, hence giving access to window and the page's jQuery (actually it's $) 
+// you have to do it this way. Otherwise it is injected to the content script
+function injectToPage(filename) {
+  console.count('injectToPage called with ' + filename);
   browser.tabs.query({
     active: true,
     url: '*://*.scoutbook.com/*'
   }, function (tabs) {
     if (tabs.length) {
-      var resourceUrl = browser.extension.getURL('scripts/preview.js');
+      var injectUrl = browser.extension.getURL(filename);
 
       const actualCode = `
         var s = document.createElement('span');
@@ -145,16 +154,70 @@ function injectPreviewButton() {
         (document.head || document.documentElement).appendChild(s);
 
         var s = document.createElement('script');
-        s.src = '${resourceUrl}';
+        s.src = '${injectUrl}';
+        s.onload = function() {
+          // this.remove();
+        };
         (document.head || document.documentElement).appendChild(s);
       `;
 
       browser.tabs.executeScript(tabs[0].id, {
         code: actualCode,
-        runAt: 'document_idle'
+        runAt: 'document_end'
       });
+    } else {
+      console.warn('could not inject "' + filename + '" on page');
     }
   });
+
+}
+
+
+var latchMap = new Map();
+
+function latch(func, timeMs) {
+  // if function has ran in the last timeMs milliseconds, don't run it again
+  let funcHash = func.toString();
+  if (!latchMap.has(funcHash) || (latchMap.has(funcHash) && Date.now() > latchMap.get(funcHash) + timeMs)) {
+    latchMap.set(funcHash, Date.now());
+    func();
+  }
+}
+
+function digestMessage(message) {
+  const msgUint8 = new TextEncoder().encode(message); // encode as (utf-8) Uint8Array
+  return crypto.subtle.digest('SHA-1', msgUint8); // hash the message
+}
+
+var oncePerPageMap = new Map();
+const tenSecondsAsMillis = 1000 * 60 * 10;
+
+function oncePerPage(slimmedEvent, func) {
+  var page = slimmedEvent.pageId;
+  digestMessage(page.toString() + func.toString())
+    .then(hashBuffer => {
+      const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+      const funcHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); // convert bytes to hex string
+      console.group('opp');
+      console.log(page.toString() + ' - ' + slimmedEvent.url);
+      //console.log('func', func.toString());
+      //console.log('funcHash', funcHash.toString());
+
+      if (!oncePerPageMap.has(funcHash) || (oncePerPageMap.has(funcHash) && Date.now() > oncePerPageMap.get(funcHash) + tenSecondsAsMillis)) {
+        console.count('running - ' + funcHash);
+        oncePerPageMap.set(funcHash, Date.now());
+        func();
+      }
+      else {
+        console.count('blocking - ' + funcHash);
+      }
+      console.groupEnd('opp');
+    })
+}
+
+function injectPreviewButton() {
+    console.count('injectPreviewButton called');
+    injectToPage('scripts/preview.js');
 }
 
 function runPageShowHandlers() {
@@ -217,13 +280,7 @@ function sendAction(action) {
       console.log("sending action=" + action);
       browser.tabs.sendMessage(tabs[0].id, JSON.stringify({
         action: action
-      }), function (sendResponse) {
-        if (browser.runtime.lastError) {
-          console.log('Error: ', browser.runtime.lastError.message);
-        } else {
-          console.log('done making call in background', r);
-        }
-      });
+      }));
     }
   });
 }
@@ -329,3 +386,19 @@ chrome.runtime.onInstalled.addListener(() => {
 
 inject(true);
 //startIntervalMessages();
+
+
+// var msgs = ['　　　1', '　　10 ', '　10　', '10　　', '0　　　', '　　　'];
+// var msgs = ['⑁⑂⑃⑀', '⑂⑃⑀⑁', '⑃⑀⑁⑂', '⑀⑁⑂⑃']
+// chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 255]});
+// var msgs = ['　　　☼', '　　☼　', '　☼　　', '☼　　　', '　　　　'];
+// var msgCounter = -1;
+// setInterval(function () {
+//   msgCounter += (1 + msgs.length);
+//   chrome.browserAction.setBadgeText({text: msgs[msgCounter % msgs.length]});
+//   let r = Math.round(Math.random() * 255), 
+//       g = Math.round(Math.random() * 255), 
+//       b = Math.round(Math.random() * 255);
+//   console.log(r, g, b);
+//   chrome.browserAction.setBadgeBackgroundColor({color: [r, g, b, 255]});
+// }, 150);

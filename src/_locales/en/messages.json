@@ -7,9 +7,21 @@
     "message": "Scoutbook Buddy Options",
     "description": "Options Page Title"
   },
-  "enableLoggingOptionLabel": {
-    "message": "Enable logging",
-    "description": "Logging option description"
+  "useSBPreviewLabel": {
+    "message": "Use Scoutbook Buddy's Preview Functionality",
+    "description": "SB's preview functionality option label"
+  },
+  "useSBPreviewDesc": {
+    "message": "Similar functionality, but Scoutbook Buddy's doesn't make a trip to the server so it's a bit faster.",
+    "description": "SB's preview functionality option description"
+  },
+  "refreshOnLogoutLabel": {
+    "message": "Refresh when session ends",
+    "description": "Refresh on logout option label"
+  },
+  "refreshOnLogoutDesc": {
+    "message": "If your session times out, do you want to refresh the page?",
+    "description": "Refresh on logout option description"
   },
   "saved": {
     "message": "Saved",
