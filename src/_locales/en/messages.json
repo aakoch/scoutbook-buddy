@@ -8,11 +8,11 @@
     "description": "Options Page Title"
   },
   "useSBPreviewLabel": {
-    "message": "Use Scoutbook Buddy's Preview Functionality",
+    "message": "Use Buddy's Preview Functionality",
     "description": "SB's preview functionality option label"
   },
   "useSBPreviewDesc": {
-    "message": "Similar functionality, but Scoutbook Buddy's doesn't make a trip to the server so it's a bit faster.",
+    "message": "Similar functionality, but Buddy's doesn't make a trip to the server so it's a bit faster.",
     "description": "SB's preview functionality option description"
   },
   "refreshOnLogoutLabel": {
