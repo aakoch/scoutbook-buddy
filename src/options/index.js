@@ -23,20 +23,30 @@ function flash(msg) {
 
 function registerOption(option) {
 
-  storage.get(option, function (resp) {
+  let id = option.name;
+  let label = option.label || chrome.i18n.getMessage(option.name + 'Label');
+  let description = option.description || chrome.i18n.getMessage(option.name + 'Desc');
+
+  let html = 
+    `<li class="option">
+      <input type="checkbox" id="${id}"> <label for="${id}">${label}</label>
+      <div>${description}</div>
+    </li>`;
+
+  $('#optionsList').append(html);
+
+  storage.get(id, function (resp) {
     // console.log(option + '? ' + !!resp[option]);
-    if (!!resp[option]) {
-      document.getElementById(option).setAttribute("checked", "checked");
+    if (!!resp[id]) {
+      document.getElementById(id).setAttribute("checked", "checked");
     }
   });
 
-  $('input#' + option).click(function (e) {
+  $('input#' + id).click(function (e) {
     $('#flash').finish();
     var value = e.target.checked;
-    // console.log(option + '? ' + value);
     let obj = {};
-    obj[option] = value;
-    // console.log('obj=', obj);
+    obj[id] = value;
     storage.set(obj, function () {
       if (chrome.runtime.lastError) {
         alert(chrome.runtime.lastError);
@@ -45,11 +55,10 @@ function registerOption(option) {
       }
     });
   });
-
 }
 
-registerOption('refreshOnLogout');
-registerOption('useSBPreview');
+registerOption({name:'refreshOnLogout'});
+registerOption({name:'useSBPreview'});
 
 document
   .getElementById("close-btn")

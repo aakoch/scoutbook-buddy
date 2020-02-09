@@ -1,16 +1,12 @@
 @import "../styles/common";
 
-body {
-  overflow-y: hidden;
-}
-
 #flash {
   margin: 10px auto;
   text-align: center;
   position: fixed;
   top: 0;
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translateX(-50%);
   background-color: #4bdc30;
   padding: 1em;
   border-radius: 1em;
@@ -41,5 +37,14 @@ section#main {
   }
   label {
     font-size: 1.2em;
+  }
+}
+
+#optionsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  li {
+    display: block;
   }
 }
