@@ -1,3 +1,3 @@
-import browser from "./extension";
+import ext from "./extension";
 
-export default (browser.storage.sync ? browser.storage.sync : browser.storage.local);
+export default (ext.storage.sync ? ext.storage.sync : ext.storage.local);

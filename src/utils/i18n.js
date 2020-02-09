@@ -1,4 +1,4 @@
-import browser from "./extension";
-document.querySelectorAll('[data-i18n]').forEach(elem => {
-  elem.innerText = browser.i18n.getMessage(elem.dataset.i18n)
+import ext from "./extension";
+document.querySelectorAll('[data-i18n]').forEach(el => {
+  el.innerText = ext.i18n.getMessage(el.dataset.i18n)
 })
