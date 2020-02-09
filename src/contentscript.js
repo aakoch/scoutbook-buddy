@@ -1,7 +1,10 @@
 import document from 'document';
 import jQuery from 'jquery';
 import browser from './utils/extension';
+import styles from './styles/contentscript.scss';
 var $ = jQuery;
+
+browser.runtime.sendMessage(browser.runtime.id, JSON.stringify({action:'inject-progress-page'}));
 
 // import Logger from './utils/logger';
 // const logger = Logger.create('contentscript');
@@ -25,9 +28,10 @@ const CHECKBOX_UNSELECTED_CLASS = 'ui-btn-up-d';
 const CHECKBOX_SELECTED_CLASS = 'ui-btn-up-e';
 
 function addFooterIndicator() {
-  // TODO: move the style into a SASS file
   $("body", document)
-    .prepend("<div id='scoutbookbuddyindicator' style='font-family: \"Roboto\", sans-serif; font-weight: normal; font-size: 12px; position: fixed; bottom: 0; right: 5px; opacity: 30%; z-index: 2'>Scoutbook Buddy Activated</div>");
+    .prepend(`<div id='scoutbookbuddyindicator'>Scoutbook Buddy Activated <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="5" cy="5" r="5"/>
+    </svg></div>`);
 }
 addFooterIndicator();
 
@@ -136,6 +140,15 @@ $(document).on('click', 'li.checkable', function (e) {
   }
 });
 
+$(document).on('pageshow.buddy', function (event) {
+  if (document.location.pathname.includes('messages/default.asp')) {
+    const request = {
+      'action': 'inject-preview-page'
+    };
+    browser.runtime.sendMessage(browser.runtime.id, JSON.stringify(request));
+  }
+})
+
 $(document).on('click', '.ui-btn,#buttonSubmit', function (e) {
   if (document.location.pathname.includes('messages/default.asp')) {
     // console.log('contentscript.js radio or submit button was clicked - should we save the email?');
@@ -159,29 +172,42 @@ $(document).on('click', '.ui-btn,#buttonSubmit', function (e) {
 
 // *****************************************************************************
 // Need to put this pageshow code into another file and maybe add a custom event
-// let observer = new MutationObserver(function (mutations) {
-//   mutations
-//     .filter(mutation => mutation.attributeName === "class")
-//     .forEach(function (mutation) {
-//       let attributeValue = $(mutation.target).prop(mutation.attributeName);
-//       if (attributeValue.includes('ui-mobile-viewport-transitioning')) {
-//         // don't do anything
-//       } else {
-//         console.log(new Date(), "pageshow event might have taken place", attributeValue,
-//           mutation.oldValue);
-//         browser.runtime.sendMessage(browser.runtime.id, JSON.stringify({
-//           event: 'pageshow',
-//           source: 'mutationObserver',
-//           pageId: $('.ui-page-active', document).attr('id'),
-//           url: document.location.href
-//         }));
-//       }
-//   });
-// });
-// observer.observe($("body", document)[0], {
-//   attributes: true,
-//   attributeOldValue: true
-// });
+// wrapped in a function to limit variables escaping
+// (function (document) {
+//   // passing in the startTime like this is me just trying to be clever.
+//   (function registerPageShowListener(document, startTime) {
+//     console.count('registerPageShowListener');
+//     if (document.mobile) {
+//       console.count('document.mobile ready after ' + (Date.now() - startTime) + ' milliseconds');
+//       let observer = new MutationObserver(function (mutations) {
+//         mutations
+//           .filter(mutation => mutation.attributeName === "class")
+//           .forEach(function (mutation) {
+//             let attributeValue = $(mutation.target).prop(mutation.attributeName);
+//             console.log('active page attribute change: ' + attributeValue);
+//             // if (attributeValue.includes('ui-mobile-viewport-transitioning')) {
+//             //   // don't do anything
+//             // } else {
+//             //   console.log(new Date(), "pageshow event might have taken place", attributeValue,
+//             //     mutation.oldValue);
+//             //   browser.runtime.sendMessage(browser.runtime.id, JSON.stringify({
+//             //     event: 'pageshow',
+//             //     source: 'mutationObserver',
+//             //     pageId: $('.ui-page-active', document).attr('id'),
+//             //     url: document.location.href
+//             //   }));
+//             // }
+//         });
+//       });
+//       observer.observe($(".activePage", document)[0], {
+//         attributes: true,
+//         attributeOldValue: true
+//       });
+//     } else {
+//       setTimeout(() => registerPageShowListener(startTime), 1);
+//     }
+//   })(document, Date.now());
+// })(document);
 // observer.observe($(document)[0], {
 //   attributes: true,
 //   attributeOldValue: true
@@ -194,11 +220,17 @@ browser.runtime.onMessage.addListener(handleMessage);
 // actually, this won't work because window isn't available to contentscripts
 (window || self).addEventListener('message', function (e) {
   console.log('contentscript.js window message received. Event=', e);
-
   if (typeof e.data == 'string') {
-    var data = JSON.parse(e.data);
+    let data;
+    try {
+      data = JSON.parse(e.data);
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
     if (data.event == 'pageshow') {
       console.log('pageshow event caught in contentscript');
+      $(document).trigger('pageshow.buddy');
       browser.runtime.sendMessage(browser.runtime.id, JSON.stringify({
         event: 'pageshow',
         pageId: $('.ui-page-active', document).attr('id'),
