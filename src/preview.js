@@ -10,7 +10,7 @@ console.count('preview script started');
 var mySpecialButtonWasPressed = false;
 
 // var $btna = $('<a href="#dialogPage" data-role="button" data-theme="a" data-rel="dialog">Preview a</a>');
-var $btna = $('<button class="ui-btn ui-btn-a buddy" data-role="button" data-theme="a">Preview Message</button>');
+var $btna = $('<button class="ui-btn ui-btn-a buddy-feature" data-role="button" data-theme="a">Preview Message</button>');
 // var $btnb = $('<button class="ui-btn ui-btn-b" data-role="button" data-theme="b">Preview b</button>');
 // var $btnc = $('<button class="ui-btn ui-btn-c" data-role="button" data-theme="c">Preview c</button>');
 // var $btnd = $('<button class="ui-btn ui-btn-d" data-role="button" data-theme="d">Preview d</button>');
@@ -90,7 +90,7 @@ function mouseEnter(e) {
 function displayPreview(content) {
   content = content  || '[empty]';
   var overlayName = 'buddy-overlay';
-  var closeBtn = $('<button class="ui-btn ui-btn-a buddy" data-role="button" data-theme="a" data-inline="true">Close</button>');
+  var closeBtn = $('<button class="ui-btn ui-btn-a buddy-feature" data-role="button" data-theme="a" data-inline="true">Close</button>');
   var style = `
     #${overlayName} {
       width: 90%;

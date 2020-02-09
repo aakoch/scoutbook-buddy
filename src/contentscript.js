@@ -29,14 +29,14 @@ const CHECKBOX_SELECTED_CLASS = 'ui-btn-up-e';
 
 function addFooterIndicator() {
   $("body", document)
-    .prepend(`<div id='scoutbookbuddyindicator'>Scoutbook Buddy Activated <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
+    .prepend(`<div id='scoutbookbuddyindicator' title='The Scoutbook Buddy extension is enhancing your Scoutbook experience'>Buddy Activated <svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">
       <circle cx="5" cy="5" r="5"/>
     </svg></div>`);
 }
 addFooterIndicator();
 
 const getCount = () => {
-  const size = $(document).find('.ui-page-active li.ui-btn-up-e').filter(".leader,.parent,.scout").length;
+  const size = $(document).find('.buddy-feature').length;
   return {
     count: size
   };
@@ -249,6 +249,16 @@ browser.runtime.onMessage.addListener(handleMessage);
 //   else if (msg.question == "Madame who?")
 //     port.postMessage({answer: "Madame... Bovary"});
 // });
+
+window.addEventListener('beforeunload', function (e) {
+  let backgroundTasksAreRunning = false;
+  if (backgroundTasksAreRunning) {
+    // Cancel the event
+    e.preventDefault();
+    // Chrome requires returnValue to be set
+    e.returnValue = '';
+  }
+});
 
 console.log('contentscript.js loaded');
 
