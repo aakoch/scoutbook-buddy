@@ -48,6 +48,7 @@
         "http://*.scoutbook.com/*",
         "https://*.scoutbook.com/*"
       ],
+      "css": ["styles/contentscript.css", "styles/progress.css"],
       "js": [
         "scripts/init.js"
       ],
@@ -74,7 +75,8 @@
     "scripts/jquery.js",
     "scripts/eventlisteners.js",
     "scripts/utils/extension.js",
-    "scripts/contentscript.js"
+    "scripts/contentscript.js",
+    "scripts/progress.js"
   ],
   "externally_connectable": {
     "matches": ["*://*.scoutbook.com/*"]

@@ -39,6 +39,7 @@ module.exports = (env, argv) => {
     eventlisteners: path.join(__dirname, "src", "eventlisteners.js"),
     inject: path.join(__dirname, "src", "inject.js"),
     preview: path.join(__dirname, "src", "preview.js"),
+    progress: path.join(__dirname, "src", "injected", "progress.js"),
     // logger: path.join(__dirname, "src", "logger.js"),
     // extension: path.join(__dirname, "src", "utils", "extension.js"),
   }
@@ -68,7 +69,7 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.css$/i,
-          use: [MiniCssExtractPlugin.loader, 'css-loader'],
+          use: ['style-loader', 'css-loader'],
         },
         {
           test: /test\.js$/,
@@ -115,9 +116,15 @@ module.exports = (env, argv) => {
       }, {
         from: "src/_locales",
         to: "./_locales",
+      // }, {
+      //   from: "src/preview_injector.js",
+      //   to: "scripts/preview_injector.js",
       }, {
         from: "src/init.js",
         to: "scripts/init.js",
+      // }, {
+      //   from: "src/styles/main.css",
+      //   to: "styles/main.css",
       }, {
         from: "src/injected/*.js",
         to: "scripts/",
