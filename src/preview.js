@@ -62,7 +62,7 @@ $('#messageForm', document).submit((e) => {
     if ($('input[type=radio][name=MessageType] + .ui-radio-on', document).attr('title') === 'Send text message') {
       displayPreview('<pre>' + $('#body').val() + '</pre>');
     } else {
-      bbcode.parse($('#body').val() || '[i]No message to preview[/i]', displayPreview);
+      bbcode.parse($('#body').val(), displayPreview);
     }
   }
   return !mySpecialButtonWasPressed;
@@ -88,32 +88,48 @@ function mouseEnter(e) {
 }
 
 function displayPreview(content) {
+  content = content  || '[empty]';
   var overlayName = 'buddy-overlay';
   var closeBtn = $('<button class="ui-btn ui-btn-a buddy" data-role="button" data-theme="a" data-inline="true">Close</button>');
   var style = `
     #${overlayName} {
-      width: ${window.innerWidth - 40}px;
-      height: ${window.innerHeight - 40}px;
+      width: 90%;
+      height: ${window.innerHeight - 60}px;
       z-index:1001;
       position:fixed;
       top: 20px;
-      left: 20px;
+      left: 50%;
 
       background-color: white;
       color: black;
-      padding: 30px;
-      width: 91%; 
+      padding: 20px 20px 5px 20px;
       z-index: 1001; 
       opacity: 0.9; 
       border: 2px solid black;
+      transform: translateX(-50%);
+    }
+    #${overlayName} .msg-body {
+      height: ${window.innerHeight - 190}px;
+      overflow-y: auto;
+      border-top: 10px solid;
+      border-image-source: linear-gradient(45deg, rgb(0,143,104,255), rgb(250,224,66,255));
+      border-image-slice: 1;
+    }
+    #${overlayName} .msg-subject, #${overlayName} .msg-body {
+      margin: 10px
+    }
+    #btnContainer {
+      width: 100px;
+      margin: 0 auto;
     }
   `;
 
   var s = document.createElement('style');
   s.innerText = style;
   (document.head || document.documentElement).appendChild(s);
+  let subject = $('#subject').text() || '[empty]';
 
-  $(`<div id='${overlayName}'><div>${content}</div></div>`)
+  $(`<div id='${overlayName}'><div class="msg-subject"><em>Subject:</em> ${subject}</div><div style="margin-left:10px"><em>Body: </em></div><div class="msg-body">${content}</div></div>`)
     .appendTo("body", document)
     .append('<div id="btnContainer"></div>');
 
@@ -126,12 +142,13 @@ function displayPreview(content) {
     .mouseenter(mouseEnter)
     .mouseleave(mouseLeave)
     .mousedown(mouseDown)
-    .click((e) => {
-      $(`#${overlayName}`, document).fadeOut((e) => {
-        $(`#${overlayName}`, document).remove()
-      });
-    });
+    .click(() => $('#' + overlayName, document)
+    .fadeOut(() => $('#' + overlayName, document)
+    .remove()));
+
+  $(window).on('resize', () => $('#' + overlayName).width($('#body').width()));
 }
 
 // hides FA button
 $("#buttonPreviewEmail").parent().hide();
+
