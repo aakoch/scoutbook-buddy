@@ -39,6 +39,6 @@
   "dependencies": {
     "bbcode": "^0.1.5",
     "jquery": "^3.4.1",
-    "logplease": "^1.2.15"
+    "shifty": "^2.8.3"
   }
 }
