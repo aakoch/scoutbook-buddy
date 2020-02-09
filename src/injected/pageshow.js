@@ -8,7 +8,7 @@
 (function () {
   // passing in the startTime like this is me just trying to be clever.
   (function registerPageShowListener(startTime) {
-    console.count('registerPageShowListener')
+    // console.count('registerPageShowListener')
     if (window.$) {
       console.count('$ ready after ' + (Date.now() - startTime) + ' milliseconds');
       $(document).on('pageshow.buddy', function (event) {
