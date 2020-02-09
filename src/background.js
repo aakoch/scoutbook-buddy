@@ -97,15 +97,19 @@ function handleMessage(request, sender, sendResponse) {
         // console.log(new Date().toISOString() + ": background.js pageshow mesage from mutationObserver. request=", request, ", sender=", sender);
         sendAction('add-footer-indicator');
 
-        if (sender.url.includes('messages/default.asp') || request.url.includes('messages/default.asp')) {
-          injectPreviewButton();
-        }
+        // if (sender.url.includes('messages/default.asp') || request.url.includes('messages/default.asp')) {
+        //   injectPreviewButton();
+        // }
 
         runPageShowHandlers();
       });
     } else {
       console.log('pageshow event from ' + request.sender);
     }
+  } else if (request.action == 'inject-preview-page') {
+    injectToPage('scripts/preview.js');
+  } else if (request.action == 'inject-progress-page') {
+    injectToPage('scripts/progress.js');
   } else if (request.action == 'save-message') {
     console.log(": background.js save-message mesage received. request=", request, ", sender=", sender);
     let message = {
@@ -140,7 +144,6 @@ function handleMessage(request, sender, sendResponse) {
 function injectToPage(filename) {
   console.count('injectToPage called with ' + filename);
   browser.tabs.query({
-    active: true,
     url: '*://*.scoutbook.com/*'
   }, function (tabs) {
     if (tabs.length) {
@@ -169,7 +172,6 @@ function injectToPage(filename) {
       console.warn('could not inject "' + filename + '" on page');
     }
   });
-
 }
 
 
@@ -213,11 +215,6 @@ function oncePerPage(slimmedEvent, func) {
       }
       console.groupEnd('opp');
     })
-}
-
-function injectPreviewButton() {
-    console.count('injectPreviewButton called');
-    injectToPage('scripts/preview.js');
 }
 
 function runPageShowHandlers() {
@@ -309,6 +306,11 @@ var updateListener = (tabId, changeInfo, tab) => {
     // doesn't work to add footer here since the page is not yet rendered
     //sendAction('add-footer-indicator');
   }
+
+  // if (changeInfo.status == 'complete' && tab.url.includes('scoutbook.com/mobile/dashboard/messages/default.asp')) {
+  //   console.log("Messages page loaded!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  //   injectToPage('scripts/preview.js');
+  // }
 }
 
 // See https://developer.chrome.com/extensions/tabs#event-onUpdated
