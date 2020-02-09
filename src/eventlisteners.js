@@ -36,7 +36,8 @@ if (!window.scoutbookbuddyinitialized) {
     // less common:
     'vmousedown', 'focusin', '##selectstart##', '##selectionchange##', 'pointerup', 'vclick',
     // some more jQuery we aren't interested in
-    'listviewcreate', 'selectmenubeforecreate', 'updatelayout', 'focusout', 'vmousecancel', 'vmouseup', 'vmousedown'
+    'listviewcreate', 'selectmenubeforecreate', 'updatelayout', 'focusout', 'vmousecancel', 'vmouseup', 'vmousedown',
+    'animationiteration', "resize"
   ];
 
   var extensionId = document.getElementById('scoutbookbuddyextensionid').innerText;
