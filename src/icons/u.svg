@@ -1,11 +1,7 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 39 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
-    <g transform="matrix(1,0,0,1,-85,-7.10543e-15)">
-        <g transform="matrix(1.20047,0,0,1.20047,-4.22998,-17.5736)">
-            <g transform="matrix(0.833008,0,0,0.833008,32.1662,14.639)">
-                <path d="M89.537,50L50.615,50L50.615,47.069L89.537,47.069L89.537,50ZM85.61,0L85.61,29.015C85.59,33.04 84.325,36.333 81.814,38.892C79.303,41.452 75.899,42.888 71.6,43.2L70.106,43.259C65.436,43.259 61.714,41.999 58.939,39.478C56.165,36.958 54.758,33.49 54.719,29.074L54.719,0L60.287,0L60.287,28.898C60.287,31.985 61.137,34.384 62.837,36.093C64.537,37.803 66.96,38.658 70.106,38.658C73.29,38.658 75.728,37.808 77.418,36.108C79.108,34.408 79.953,32.014 79.953,28.927L79.953,0L85.61,0Z" style="fill-rule:nonzero;"/>
-            </g>
-        </g>
-    </g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 20 25" version="1.1" 
+  xmlns="http://www.w3.org/2000/svg" 
+  xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" 
+  xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+  <path d="M19.461,25l-19.461,0l0,-1.465l19.461,0l0,1.465Zm-1.964,-25l0,14.508c-0.01,2.012 -0.642,3.658 -1.898,4.938c-1.255,1.28 -2.957,1.998 -5.107,2.154l-0.747,0.03c-2.335,0 -4.196,-0.631 -5.583,-1.891c-1.387,-1.26 -2.091,-2.994 -2.11,-5.202l0,-14.537l2.784,0l0,14.449c0,1.544 0.425,2.743 1.275,3.598c0.85,0.854 2.061,1.282 3.634,1.282c1.592,0 2.811,-0.425 3.656,-1.275c0.845,-0.85 1.268,-2.047 1.268,-3.59l0,-14.464l2.828,0Z" style="fill-rule:nonzero;"/>
 </svg>
