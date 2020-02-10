@@ -9,21 +9,21 @@ import {
 
 console.log(styles);
 
-var numberOfSlices = 5;
+var numberOfSlices = 6;
 var slicePercent = 100 / numberOfSlices;
-var previousSlice = 0;
+var previousPercent = 0;
 var slices = [];
-// for (var i = 0; i < numberOfSlices; i++) {
+for (var i = 0; i < numberOfSlices; i++) {
   slices.push( {
     from: {
-      percent: 0
+      percent: previousPercent
     },
     to: {
-      percent: 100
+      percent: previousPercent + slicePercent
     }
   } );
-  // previousSlice += slicePercent;
-// }
+  previousPercent += slicePercent;
+}
 
 /**
  * Percent (0-100) into polar coordinates. Assumes radius of 1.
@@ -64,11 +64,6 @@ function createPath(percent) {
   ].join(' ');
 }
 
-// let pathData = createPath(0);
-
-// create a <path> and append it to the <svg> element
-
-
 function getLinePath(percent) {
   const end = pctToXY(percent);
   return `M 0 0 L ${end.x} ${end.y}`;
@@ -78,7 +73,7 @@ function drawLine(percent) {
   let pathData = getLinePath(percent);
   const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   pathEl.setAttribute('d', pathData);
-  pathEl.setAttribute('stroke', '#333');
+  pathEl.setAttribute('stroke', '#d6cebd');
   pathEl.setAttribute('stroke-width', '.01px');
   svgEl.appendChild(pathEl);
 }
@@ -92,11 +87,11 @@ function closeTo(num1, num2) {
   return num1 - .2 < num2 && num1 + .2 > num2;
 }
 
-
-slices.forEach(slice => {
+var tweens = [];
+var previousTween;
+slices.forEach((slice, index) => {
 
   // var pieProgress = document.getElementById('piePath' + sliceCounter);
-
 
   const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   // pathEl.setAttribute('d', pathData);
@@ -109,26 +104,33 @@ slices.forEach(slice => {
   tweenable.setConfig({
     from: {
       percent: slice.from.percent,
+      rotation: index * slicePercent * 2,
     },
     to: {
-      percent: slice.to.percent,
+      percent: Math.min(99.99, slice.to.percent),
+      rotation: (index + 1) * slicePercent * 2,
     },
     duration: 4000,
-    easing: 'easeOutQuad',
+    easing: {percent: 'easeFromTo', rotation: 'linear'},
     step: (state) => {
     console.log('state.percent = ' + state.percent);
-      if (closeToModulous(state.percent, 25)) {
+      if (closeToModulous(state.percent, slicePercent)) {
         drawLine(state.percent);
       }
       cumulativePercent = 0
       pathEl.setAttribute('d', createPath(state.percent));
+      svgEl.style = 'transform:rotate(' + state.rotation + 'deg)'
     }
   });
 
-  setTimeout(function () {
-  tweenable.tween();
-  }, 2000);
+  if (previousTween == null) {
+    previousTween = tweenable.tween();
+  }
+  else {
+    previousTween = previousTween.then(() => tweenable.tween());
+  }
 });
+
 
 // // var start = null;
 // const progressBar = document.createElement('div');

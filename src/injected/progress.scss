@@ -7,11 +7,11 @@
   top: 50%;
   left: 50%;
   z-index: 10;
-}
 
-svg {
-  height: 200px; // the contents will scale to fit because of viewBox
-  path {
-    fill: $red;
+  svg {
+    height: 100px; // the contents will scale to fit because of viewBox
+    path {
+      fill: $red;
+    }
   }
 }
