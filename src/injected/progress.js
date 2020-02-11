@@ -51,7 +51,7 @@ let sliceCounter = 0;
 function createPath(percent) {
   const start = pctToXY(0);
   const end = pctToXY(percent);
-  console.log('end', end);
+  // console.log('end', end);
 
   // if the slice is more than 50%, take the large arc (the long way around)
   const largeArcFlag = percent / 100 > .5 ? 1 : 0;
@@ -89,6 +89,7 @@ function closeTo(num1, num2) {
 
 var tweens = [];
 var previousTween;
+var startTime;
 slices.forEach((slice, index) => {
 
   // var pieProgress = document.getElementById('piePath' + sliceCounter);
@@ -110,10 +111,11 @@ slices.forEach((slice, index) => {
       percent: Math.min(99.99, slice.to.percent),
       rotation: (index + 1) * slicePercent * 2,
     },
-    duration: 4000,
-    easing: {percent: 'easeFromTo', rotation: 'linear'},
+    duration: 2000,
+    easing: {percent: 'linear', rotation: 'linear'},
     step: (state) => {
-    console.log('state.percent = ' + state.percent);
+      
+      // console.log('state.percent = ' + state.percent);
       if (closeToModulous(state.percent, slicePercent)) {
         drawLine(state.percent);
       }
@@ -124,10 +126,18 @@ slices.forEach((slice, index) => {
   });
 
   if (previousTween == null) {
+    startTime = Date.now();
     previousTween = tweenable.tween();
   }
   else {
-    previousTween = previousTween.then(() => tweenable.tween());
+    previousTween = previousTween.then((state) => {
+      var elapsedTime = Date.now() - startTime;
+      console.log('elapsedTime=', elapsedTime);
+      startTime = Date.now();
+      // return tweenable.tween({duration: elapsedTime});
+      tweenable.setConfig({duration: 2500});
+      return tweenable.tween();
+    });
   }
 });
 
