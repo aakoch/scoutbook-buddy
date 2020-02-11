@@ -64,9 +64,9 @@ module.exports = (env, argv) => {
           use: ['file-loader'],
         },
         {
-          test: /\.scss$/i,
-          use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
-        },
+           test: /\.scss$/i,
+           use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+         },
         {
           test: /\.css$/i,
           use: ['style-loader', 'css-loader'],
@@ -89,6 +89,7 @@ module.exports = (env, argv) => {
     plugins: [
       new MiniCssExtractPlugin({
         filename: 'styles/[name].css',
+        chunkFilename: '[id].css', // is this needed?
       }),
       new CleanWebpackPlugin({
         cleanStaleWebpackAssets: false,
