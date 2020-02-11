@@ -1,7 +1,7 @@
 import document from 'document';
 import jQuery from 'jquery';
 import browser from './utils/extension';
-import styles from './styles/contentscript.scss';
+import './styles/contentscript.scss';
 var $ = jQuery;
 
 browser.runtime.sendMessage(browser.runtime.id, JSON.stringify({action:'inject-progress-page'}));
