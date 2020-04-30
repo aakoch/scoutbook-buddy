@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "bbcode": "^0.1.5",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "shifty": "^2.8.3"
   }
 }
