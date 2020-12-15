@@ -2,6 +2,8 @@
 
 # Scoutbook Buddy
 
+# This project as been archived
+
 [![Scoutbook Buddy](https://github.com/aakoch/scoutbook-buddy/blob/master/src/icons/icon_64.png?raw=true)](https://github.com/aakoch/scoutbook-buddy) 
 > Scoutbook Buddy - a Scoutbook enhancing Chrome extension
 
